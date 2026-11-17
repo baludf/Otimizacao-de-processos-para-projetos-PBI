@@ -1,0 +1,7 @@
+createOrReplace
+
+	relationship 7be53438-5d90-dae9-42b9-b29063d946a5
+		toCardinality: many
+		fromColumn: dNivel.Nível
+		toColumn: fVinculosRH.Nível
+

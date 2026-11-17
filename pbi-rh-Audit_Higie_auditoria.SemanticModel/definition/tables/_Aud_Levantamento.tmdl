@@ -1,0 +1,121 @@
+table _Aud_Levantamento
+	lineageTag: 40c6a65a-1543-4207-83c2-e241ecc37c5a
+
+	column Tipo
+		dataType: string
+		lineageTag: d3d640e8-27a5-4ee3-9d68-e668f6f08d60
+		summarizeBy: none
+		sourceColumn: Tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tabela
+		dataType: string
+		lineageTag: 47b48fc5-7285-4adc-964d-1856187e7999
+		summarizeBy: none
+		sourceColumn: Tabela
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nome
+		dataType: string
+		lineageTag: b2723501-745c-450e-b2d4-71cafce1a2f6
+		summarizeBy: none
+		sourceColumn: Nome
+
+		annotation SummarizationSetBy = Automatic
+
+	column UtilizadaEmVisual
+		dataType: string
+		lineageTag: 595de34d-4ce0-475e-a80a-3fb1bf253bb1
+		summarizeBy: none
+		sourceColumn: UtilizadaEmVisual
+
+		annotation SummarizationSetBy = Automatic
+
+	column UtilizadaNoModelo
+		dataType: string
+		lineageTag: 7f53bc15-cd64-4a83-bc6b-daad96e36a44
+		summarizeBy: none
+		sourceColumn: UtilizadaNoModelo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: 8edd3ceb-3c56-4629-b564-6b841b8240db
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column QtdLocaisDeUso
+		dataType: int64
+		formatString: 0
+		lineageTag: 420dcdbd-6bc5-4a5f-ab2a-7401e821709b
+		summarizeBy: sum
+		sourceColumn: QtdLocaisDeUso
+
+		annotation SummarizationSetBy = Automatic
+
+	column LocaisDeUsoVisual
+		dataType: string
+		lineageTag: 643d0d3e-753f-4f53-972c-4bfd86954f41
+		summarizeBy: none
+		sourceColumn: LocaisDeUsoVisual
+
+		annotation SummarizationSetBy = Automatic
+
+	column LocaisDeUsoModelo
+		dataType: string
+		lineageTag: db914fdb-ddf4-4841-98d2-23119e448719
+		summarizeBy: none
+		sourceColumn: LocaisDeUsoModelo
+
+		annotation SummarizationSetBy = Automatic
+
+	column PaginasDeUso
+		dataType: string
+		lineageTag: 33cfdf98-2783-488d-8e84-4b9a7de97c50
+		summarizeBy: none
+		sourceColumn: PaginasDeUso
+
+		annotation SummarizationSetBy = Automatic
+
+	column UsoEfetivo
+		dataType: string
+		lineageTag: a4b0b482-e38f-49a5-9e6b-f6bddf7e9898
+		summarizeBy: none
+		sourceColumn: UsoEfetivo
+
+		annotation SummarizationSetBy = Automatic
+
+	column StatusFinal
+		dataType: string
+		lineageTag: c148a669-7a36-4156-a589-66c4fe48f6c6
+		summarizeBy: none
+		sourceColumn: StatusFinal
+
+		annotation SummarizationSetBy = Automatic
+
+	column StatusPosHigienizacao
+		dataType: string
+		lineageTag: 3efb6cf7-2049-47d2-9b40-20ad324f7666
+		summarizeBy: none
+		sourceColumn: StatusPosHigienizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Aud_Levantamento = m
+		mode: import
+		source =
+				let
+				    Fonte = Csv.Document(File.Contents("C:\Users\GuilhermeCosta\GitHub\Estudos\Higienizacao PBI\Auditoria_Higienizacao\pbi-rh-Audit_Higie_auditoria.SemanticModel\levantamento_uso_objetos_pbi-rh-Audit_Higie.csv"),[Delimiter=";", Columns=13, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Fonte, [PromoteAllScalars=true]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"Tipo", type text}, {"Tabela", type text}, {"Nome", type text}, {"UtilizadaEmVisual", type text}, {"UtilizadaNoModelo", type text}, {"Status", type text}, {"QtdLocaisDeUso", Int64.Type}, {"LocaisDeUsoVisual", type text}, {"LocaisDeUsoModelo", type text}, {"PaginasDeUso", type text}, {"UsoEfetivo", type text}, {"StatusFinal", type text}, {"StatusPosHigienizacao", type text}})
+				in
+				    #"Tipo Alterado"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table

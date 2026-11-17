@@ -1,0 +1,6 @@
+createOrReplace
+
+	relationship c00c9de8-14ac-416c-cc93-b2ac76d765b4
+		fromColumn: fVinculosRH.Nível
+		toColumn: dNivel.Nível
+

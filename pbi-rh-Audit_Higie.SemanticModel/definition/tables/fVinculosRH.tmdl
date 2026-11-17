@@ -1,0 +1,256 @@
+/// Fato de vínculos de RH, uma linha por ID RH. Exclui nome, nascimento, endereço e imagem da camada analítica.
+table fVinculosRH
+	lineageTag: aa860cea-5619-493b-ad79-bae5d1ebc114
+
+	/// Chave única do vínculo na fonte.
+	column 'ID RH'
+		dataType: int64
+		isHidden
+		isUnique
+		lineageTag: 3982d268-3e8b-4819-b3f8-6ab30f6970ae
+		summarizeBy: sum
+		sourceColumn: ID RH
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Estado Civil'
+		dataType: string
+		lineageTag: 3f91e409-5fed-4b49-b228-dc1ede695349
+		summarizeBy: none
+		sourceColumn: Estado Civil
+
+	column Sexo
+		dataType: string
+		lineageTag: edcd8e80-9bbd-4cad-91ac-866b62e9dc97
+		summarizeBy: none
+		sourceColumn: Sexo
+
+	column 'Data Contratação'
+		dataType: dateTime
+		formatString: dd/MM/yyyy
+		lineageTag: 057892d9-448f-4e1c-9ad9-7c8f3a6820fa
+		summarizeBy: none
+		sourceColumn: Data Contratação
+
+	column 'Data Demissão'
+		dataType: dateTime
+		formatString: dd/MM/yyyy
+		lineageTag: 872c83e0-e142-47df-bb8c-64c56305843c
+		summarizeBy: none
+		sourceColumn: Data Demissão
+
+	column 'Salário Base'
+		dataType: double
+		formatString: R$ #,0.00
+		lineageTag: 72b8427c-c56e-43f6-81e2-5a35f31319ac
+		summarizeBy: sum
+		sourceColumn: Salário Base
+
+	column Impostos
+		dataType: double
+		formatString: R$ #,0.00
+		lineageTag: 05e216ad-0938-4bcb-a803-d52d99d2aa48
+		summarizeBy: sum
+		sourceColumn: Impostos
+
+	column Benefícios
+		dataType: double
+		formatString: R$ #,0.00
+		lineageTag: c08048df-408b-46cc-89ea-10bc11117fb3
+		summarizeBy: sum
+		sourceColumn: Benefícios
+
+	column VT
+		dataType: double
+		formatString: R$ #,0.00
+		lineageTag: f45cf489-a4c2-4413-9284-ae063cb708bd
+		summarizeBy: sum
+		sourceColumn: VT
+
+	column VR
+		dataType: double
+		formatString: R$ #,0.00
+		lineageTag: ae670a21-51d8-4138-82c4-20b549827f1c
+		summarizeBy: sum
+		sourceColumn: VR
+
+	column Cargo
+		dataType: string
+		lineageTag: 08f4f24d-f671-42c7-b64a-46037134a4b3
+		summarizeBy: none
+		sourceColumn: Cargo
+
+		changedProperty = IsHidden
+
+	column Nível
+		dataType: string
+		lineageTag: 6505f7eb-4295-4fe4-9e37-00d3143e0c78
+		summarizeBy: none
+		sourceColumn: Nível
+
+		changedProperty = IsHidden
+
+	column Área
+		dataType: string
+		lineageTag: b81adc1e-7f72-4899-9c41-f18c127398b1
+		summarizeBy: none
+		sourceColumn: Área
+
+		changedProperty = IsHidden
+
+	column 'Férias Acumuladas'
+		dataType: int64
+		lineageTag: ade1f0d5-8d50-4317-9332-5f7c2a75b7a1
+		summarizeBy: sum
+		sourceColumn: Férias Acumuladas
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Horas Extras'
+		dataType: int64
+		lineageTag: a094e571-b16f-4540-bd6c-b406baf78e26
+		summarizeBy: sum
+		sourceColumn: Horas Extras
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Avaliação do Funcionário'
+		dataType: double
+		lineageTag: c02fd80e-50db-4c33-a5b0-68fd1930d346
+		summarizeBy: sum
+		sourceColumn: Avaliação do Funcionário
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Trabalho em Equipe'
+		dataType: int64
+		lineageTag: 7cd4ea04-588e-4b83-b78d-e609eaa8fe21
+		summarizeBy: sum
+		sourceColumn: Trabalho em Equipe
+
+		annotation SummarizationSetBy = Automatic
+
+	column Liderança
+		dataType: int64
+		lineageTag: b3679952-66fa-4ada-9792-2a83fd2564a0
+		summarizeBy: sum
+		sourceColumn: Liderança
+
+		annotation SummarizationSetBy = Automatic
+
+	column Comunicação
+		dataType: int64
+		lineageTag: 445151b9-5ccf-4c74-b147-a375c3c84987
+		summarizeBy: sum
+		sourceColumn: Comunicação
+
+		annotation SummarizationSetBy = Automatic
+
+	column Iniciativa
+		dataType: int64
+		lineageTag: 2f36c93c-f4db-479a-8322-50e17c86de78
+		summarizeBy: sum
+		sourceColumn: Iniciativa
+
+		annotation SummarizationSetBy = Automatic
+
+	column Organização
+		dataType: int64
+		lineageTag: 6c590e66-7fd7-48ea-a343-061117a9773c
+		summarizeBy: sum
+		sourceColumn: Organização
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Flag Data Demissão Antes Contratação'
+		dataType: boolean
+		isHidden
+		lineageTag: 4c82fd46-25fe-4fdb-bbeb-8a2a3d26f8c1
+		summarizeBy: none
+		sourceColumn: Flag Data Demissão Antes Contratação
+
+	column 'Flag Valor Financeiro Negativo'
+		dataType: boolean
+		isHidden
+		lineageTag: 0792366b-ad2c-4b10-8e0f-f0205a6aff27
+		summarizeBy: none
+		sourceColumn: Flag Valor Financeiro Negativo
+
+	column 'Flag Férias Negativas'
+		dataType: boolean
+		isHidden
+		lineageTag: e090e61a-5e04-4ecb-84a5-77c523390d86
+		summarizeBy: none
+		sourceColumn: Flag Férias Negativas
+
+	column 'Flag Horas Extras Negativas'
+		dataType: boolean
+		isHidden
+		lineageTag: 8fae656c-ac26-45a8-96bb-40b9c0146e58
+		summarizeBy: none
+		sourceColumn: Flag Horas Extras Negativas
+
+	column 'Flag Avaliação Fora 0 a 10'
+		dataType: boolean
+		isHidden
+		lineageTag: c9e4ef6e-3e9f-4a17-97c3-b3f64e31b81e
+		summarizeBy: none
+		sourceColumn: Flag Avaliação Fora 0 a 10
+
+	column 'Flag Competência Fora 0 a 10'
+		dataType: boolean
+		isHidden
+		lineageTag: 4a0e67da-2b45-4a4c-a95a-96460dcd4970
+		summarizeBy: none
+		sourceColumn: Flag Competência Fora 0 a 10
+
+	column 'Flag Idade Admissão Menor 18'
+		dataType: boolean
+		isHidden
+		lineageTag: ec94a6e2-18db-451a-be6e-c39db3caaadc
+		summarizeBy: none
+		sourceColumn: Flag Idade Admissão Menor 18
+
+	column 'Flag Registro Inválido'
+		dataType: boolean
+		isHidden
+		lineageTag: a2b96c0a-04e9-4306-9fe5-bfadeccf0749
+		summarizeBy: none
+		sourceColumn: Flag Registro Inválido
+
+	column 'Idade na Admissão'
+		dataType: int64
+		lineageTag: c9d89a76-bf62-4527-bb72-72b94f0e5dae
+		summarizeBy: sum
+		sourceColumn: Idade na Admissão
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Faixa Etária na Admissão'
+		dataType: string
+		lineageTag: 5d435907-f15a-4935-a406-2f4111b66a71
+		summarizeBy: none
+		sourceColumn: Faixa Etária na Admissão
+
+	column 'Status do Vínculo'
+		dataType: string
+		lineageTag: 6face29f-e749-495f-9338-4a4ecfd01385
+		summarizeBy: none
+		sourceColumn: Status do Vínculo
+
+	partition fVinculosRH = m
+		mode: import
+		source =
+				let
+				 Fonte=stgFuncionarios,
+				 ComIdade=Table.AddColumn(Fonte,"Idade na Admissão",each if [Data de Nascimento]=null or [Data de Contratacao]=null then null else Number.RoundDown(Duration.Days(Date.From([Data de Contratacao])-Date.From([Data de Nascimento]))/365.2425),Int64.Type),
+				 ComFaixa=Table.AddColumn(ComIdade,"Faixa Etária na Admissão",each if [Idade na Admissão]=null then "Não informado" else if [Idade na Admissão]<18 then "Menor de 18" else if [Idade na Admissão]<25 then "18 a 24" else if [Idade na Admissão]<35 then "25 a 34" else if [Idade na Admissão]<45 then "35 a 44" else if [Idade na Admissão]<55 then "45 a 54" else "55 ou mais",type text),
+				 ComStatus=Table.AddColumn(ComFaixa,"Status do Vínculo",each if [Data de Demissao]=null then "Sem data de desligamento" else "Desligado",type text),
+				 SemPII=Table.RemoveColumns(ComStatus,{"Nome Completo","Data de Nascimento","Endereço","Imagem"}),
+				 Renomeadas=Table.RenameColumns(SemPII,{{"Data de Contratacao","Data Contratação"},{"Data de Demissao","Data Demissão"},{"Salario Base","Salário Base"},{"Beneficios","Benefícios"},{"Ferias Acumuladas","Férias Acumuladas"}})
+				in Renomeadas
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

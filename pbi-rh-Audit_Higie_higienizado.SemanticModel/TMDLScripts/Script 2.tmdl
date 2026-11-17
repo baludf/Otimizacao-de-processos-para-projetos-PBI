@@ -1,0 +1,6 @@
+createOrReplace
+
+	relationship 5618b33b-0957-95df-d88f-808f5598863d
+		fromColumn: fVinculosRH.Cargo
+		toColumn: dCargo.Cargo
+

@@ -1,0 +1,374 @@
+/// Staging rastreável da planilha Plan1. Preserva PII apenas nesta camada oculta e adiciona flags de qualidade sem excluir registros.
+table stgFuncionarios
+	lineageTag: 6fcb89ef-9243-4b3c-9705-888f2a5be429
+
+	column 'ID RH'
+		dataType: int64
+		lineageTag: 54af48e2-50dd-4ce4-a7ec-d088bf5c9100
+		summarizeBy: sum
+		sourceColumn: ID RH
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nome Completo'
+		dataType: string
+		lineageTag: a41b5fe2-fe7f-46e6-a86b-92ac86770289
+		summarizeBy: none
+		sourceColumn: Nome Completo
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Estado Civil'
+		dataType: string
+		lineageTag: 1f19b80f-23f3-48a1-bf94-455a2a0fb3e2
+		summarizeBy: none
+		sourceColumn: Estado Civil
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sexo
+		dataType: string
+		lineageTag: 24f937d1-9707-4d2e-bd52-c75a31f90231
+		summarizeBy: none
+		sourceColumn: Sexo
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data de Nascimento'
+		dataType: dateTime
+		lineageTag: c1844f7f-5f2a-4afb-b88f-e2be612a9d59
+		summarizeBy: none
+		sourceColumn: Data de Nascimento
+
+		variation Variação
+			isDefault
+			relationship: d21c6173-15e3-4e6e-a049-8b502976f79e
+			defaultHierarchy: LocalDateTable_cf14291d-6606-44c3-bc1c-c1b772a0bd8f.'Hierarquia de datas'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Endereço
+		dataType: string
+		lineageTag: 37efeb3c-8e30-4e2c-8c8c-13747171934e
+		summarizeBy: none
+		sourceColumn: Endereço
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data de Contratacao'
+		dataType: dateTime
+		lineageTag: 670a11f5-0aaa-440e-a40a-9cd30f700493
+		summarizeBy: none
+		sourceColumn: Data de Contratacao
+
+		variation Variação
+			isDefault
+			relationship: e304fd24-6f4d-4076-a156-86eeed8668f6
+			defaultHierarchy: LocalDateTable_9fbf330c-a63d-4710-8f16-d4400b2bae5f.'Hierarquia de datas'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data de Demissao'
+		dataType: dateTime
+		lineageTag: a5e0bb68-1224-4482-9841-597c03139486
+		summarizeBy: none
+		sourceColumn: Data de Demissao
+
+		variation Variação
+			isDefault
+			relationship: f74df79f-0d41-43ee-b9f7-79eb3444a835
+			defaultHierarchy: LocalDateTable_882d33ab-1416-450e-a1ea-527ed74fea6b.'Hierarquia de datas'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Salario Base'
+		dataType: double
+		lineageTag: 56308cf2-3929-44bc-bc35-c64547c8fd73
+		summarizeBy: sum
+		sourceColumn: Salario Base
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Impostos
+		dataType: double
+		lineageTag: 4744e472-5e35-4197-8010-f9f2234d92f4
+		summarizeBy: sum
+		sourceColumn: Impostos
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Beneficios
+		dataType: double
+		lineageTag: ab812684-91aa-434f-ba05-51c3bb2044c9
+		summarizeBy: sum
+		sourceColumn: Beneficios
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column VT
+		dataType: double
+		lineageTag: 47fcf07f-87dd-4c5e-8533-1857cb10f594
+		summarizeBy: sum
+		sourceColumn: VT
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column VR
+		dataType: double
+		lineageTag: 2f8a9338-ad50-45e4-a164-082b9d395e2b
+		summarizeBy: sum
+		sourceColumn: VR
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cargo
+		dataType: string
+		lineageTag: 653483ad-dde5-407e-a9f8-3cc95e32c329
+		summarizeBy: none
+		sourceColumn: Cargo
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nível
+		dataType: string
+		lineageTag: 5ca7e02c-5419-4a12-a2ac-b2193ffd09e7
+		summarizeBy: none
+		sourceColumn: Nível
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Área
+		dataType: string
+		lineageTag: 8a5d9d47-128f-4b53-9f12-22cc130215f5
+		summarizeBy: none
+		sourceColumn: Área
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ferias Acumuladas'
+		dataType: int64
+		lineageTag: 0c8d3fcb-ccd4-4983-8d43-f1e544f28b3d
+		summarizeBy: sum
+		sourceColumn: Ferias Acumuladas
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Horas Extras'
+		dataType: int64
+		lineageTag: 587409c2-deba-4fe8-9f97-8209fd9b7d1f
+		summarizeBy: sum
+		sourceColumn: Horas Extras
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Imagem
+		dataType: string
+		lineageTag: d2559323-47c5-4108-94db-acf756d2fbe7
+		summarizeBy: none
+		sourceColumn: Imagem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Avaliação do Funcionário'
+		dataType: double
+		lineageTag: 1ab3fb5b-d7df-4615-9202-f2d408b1c3f7
+		summarizeBy: sum
+		sourceColumn: Avaliação do Funcionário
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Trabalho em Equipe'
+		dataType: int64
+		lineageTag: 68feac05-fbc5-4188-8261-db23e52416d1
+		summarizeBy: sum
+		sourceColumn: Trabalho em Equipe
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Liderança
+		dataType: int64
+		lineageTag: 83d9b46a-2469-4f6d-9934-0fdc31279d73
+		summarizeBy: sum
+		sourceColumn: Liderança
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Comunicação
+		dataType: int64
+		lineageTag: c5d073bf-85ec-4e72-99e5-31ba7825edfe
+		summarizeBy: sum
+		sourceColumn: Comunicação
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Iniciativa
+		dataType: int64
+		lineageTag: 19c363f3-3cba-46f9-a9f7-ac7fc7d9891a
+		summarizeBy: sum
+		sourceColumn: Iniciativa
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Organização
+		dataType: int64
+		lineageTag: 9632bfb1-1e11-4022-9cf1-7573860de337
+		summarizeBy: sum
+		sourceColumn: Organização
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Flag Data Demissão Antes Contratação'
+		dataType: boolean
+		lineageTag: b991d709-f80f-4a34-9469-4b03fe1e0458
+		summarizeBy: none
+		sourceColumn: Flag Data Demissão Antes Contratação
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Flag Valor Financeiro Negativo'
+		dataType: boolean
+		lineageTag: 33cd8af7-c0ad-486d-8571-3e6f20b12152
+		summarizeBy: none
+		sourceColumn: Flag Valor Financeiro Negativo
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Flag Férias Negativas'
+		dataType: boolean
+		lineageTag: d50e68c8-28b5-4726-9fcd-868abe8560f9
+		summarizeBy: none
+		sourceColumn: Flag Férias Negativas
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Flag Horas Extras Negativas'
+		dataType: boolean
+		lineageTag: 5ac089c7-5ebb-4b43-abb5-5a45e2662a75
+		summarizeBy: none
+		sourceColumn: Flag Horas Extras Negativas
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Flag Avaliação Fora 0 a 10'
+		dataType: boolean
+		lineageTag: f7e11f4a-f451-48e8-8ecb-7f6c2cec3dd1
+		summarizeBy: none
+		sourceColumn: Flag Avaliação Fora 0 a 10
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Flag Competência Fora 0 a 10'
+		dataType: boolean
+		lineageTag: f7b14b9a-63b5-4fa8-8b3d-03f3db72b650
+		summarizeBy: none
+		sourceColumn: Flag Competência Fora 0 a 10
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Flag Idade Admissão Menor 18'
+		dataType: boolean
+		lineageTag: f220fe21-4576-4b8a-8df9-a2a4db305f60
+		summarizeBy: none
+		sourceColumn: Flag Idade Admissão Menor 18
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Flag Registro Inválido'
+		dataType: boolean
+		lineageTag: 1f556189-42b5-4f78-a79e-a2847a395e2a
+		summarizeBy: none
+		sourceColumn: Flag Registro Inválido
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition stgFuncionarios = m
+		mode: import
+		source =
+				let
+				 Fonte=Excel.Workbook(File.Contents(pCaminhoBaseRH),null,true),
+				 Plan1=Fonte{[Item="Plan1",Kind="Sheet"]}[Data],
+				 Cabecalhos=Table.PromoteHeaders(Plan1,[PromoteAllScalars=true]),
+				 Tipos=Table.TransformColumnTypes(Cabecalhos,{{"ID RH",Int64.Type},{"Nome Completo",type text},{"Estado Civil",type text},{"Sexo",type text},{"Data de Nascimento",type datetime},{"Endereço",type text},{"Data de Contratacao",type datetime},{"Data de Demissao",type datetime},{"Salario Base",type number},{"Impostos",type number},{"Beneficios",type number},{"VT",type number},{"VR",type number},{"Cargo",type text},{"Nível",type text},{"Área",type text},{"Ferias Acumuladas",Int64.Type},{"Horas Extras",Int64.Type},{"Imagem",type text},{"Avaliação do Funcionário",type number},{"Trabalho em Equipe",Int64.Type},{"Liderança",Int64.Type},{"Comunicação",Int64.Type},{"Iniciativa",Int64.Type},{"Organização",Int64.Type}},"pt-BR"),
+				 TextosLimpos=Table.TransformColumns(Tipos,{{"Nome Completo",each if _=null then null else Text.Trim(Text.Clean(_)),type text},{"Estado Civil",each if _=null then null else Text.Upper(Text.Trim(Text.Clean(_))),type text},{"Sexo",each if _=null then null else Text.Upper(Text.Trim(Text.Clean(_))),type text},{"Cargo",each if _=null then null else Text.Trim(Text.Clean(_)),type text},{"Nível",each if _=null then null else Text.Trim(Text.Clean(_)),type text},{"Área",each if _=null then null else Text.Trim(Text.Clean(_)),type text}}),
+				 FlagData=Table.AddColumn(TextosLimpos,"Flag Data Demissão Antes Contratação",each [Data de Demissao]<>null and [Data de Demissao]<[Data de Contratacao],type logical),
+				 FlagFinanceiro=Table.AddColumn(FlagData,"Flag Valor Financeiro Negativo",each List.AnyTrue(List.Transform({[Salario Base],[Impostos],[Beneficios],[VT],[VR]},each _<>null and _<0)),type logical),
+				 FlagFerias=Table.AddColumn(FlagFinanceiro,"Flag Férias Negativas",each [Ferias Acumuladas]<>null and [Ferias Acumuladas]<0,type logical),
+				 FlagHoras=Table.AddColumn(FlagFerias,"Flag Horas Extras Negativas",each [Horas Extras]<>null and [Horas Extras]<0,type logical),
+				 FlagAvaliacao=Table.AddColumn(FlagHoras,"Flag Avaliação Fora 0 a 10",each [Avaliação do Funcionário]=null or [Avaliação do Funcionário]<0 or [Avaliação do Funcionário]>10,type logical),
+				 FlagCompetencia=Table.AddColumn(FlagAvaliacao,"Flag Competência Fora 0 a 10",each List.AnyTrue(List.Transform({[Trabalho em Equipe],[Liderança],[Comunicação],[Iniciativa],[Organização]},each _=null or _<0 or _>10)),type logical),
+				 FlagIdade=Table.AddColumn(FlagCompetencia,"Flag Idade Admissão Menor 18",each [Data de Nascimento]<>null and [Data de Contratacao]<>null and Duration.Days(Date.From([Data de Contratacao])-Date.From([Data de Nascimento]))/365.2425<18,type logical),
+				 FlagRegistro=Table.AddColumn(FlagIdade,"Flag Registro Inválido",each [ID RH]=null or [Data de Contratacao]=null or [Flag Data Demissão Antes Contratação] or [Flag Valor Financeiro Negativo] or [Flag Férias Negativas] or [Flag Horas Extras Negativas] or [Flag Avaliação Fora 0 a 10] or [Flag Competência Fora 0 a 10],type logical)
+				in FlagRegistro
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

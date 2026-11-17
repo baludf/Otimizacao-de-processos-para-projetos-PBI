@@ -1,0 +1,8 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "fdfcfa31d078832000c6",
+  "displayName": "Análises HTML",
+  "displayOption": "FitToPage",
+  "height": 920,
+  "width": 1600
+}

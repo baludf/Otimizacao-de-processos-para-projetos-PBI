@@ -1,0 +1,41 @@
+table _Hig_Resumo
+	lineageTag: ae2de2da-d0c6-4627-b100-8bcaa530b080
+
+	column Tabela
+		dataType: string
+		lineageTag: 4c30bad9-1d27-4457-9e6a-71e9100dbae8
+		summarizeBy: none
+		sourceColumn: Tabela
+
+	column ObjetosAntes
+		dataType: int64
+		formatString: 0
+		lineageTag: 33db820f-9e2c-4840-987c-becc6aab8821
+		summarizeBy: sum
+		sourceColumn: ObjetosAntes
+
+	column ObjetosDepois
+		dataType: int64
+		formatString: 0
+		lineageTag: 935e2188-9d0e-459e-b18f-91a818940cbf
+		summarizeBy: sum
+		sourceColumn: ObjetosDepois
+
+	column Removidos
+		dataType: int64
+		formatString: 0
+		lineageTag: 63dd6d47-67a1-4d65-bae9-67d4d2f54d42
+		summarizeBy: sum
+		sourceColumn: Removidos
+
+	partition _Hig_Resumo = m
+		mode: import
+		source =
+				let
+				    Fonte = Csv.Document(File.Contents("C:\Users\GuilhermeCosta\GitHub\Estudos\Higienizacao PBI\Auditoria_Higienizacao\pbi-rh-Audit_Higie_higienizado.SemanticModel\resumo_pbi-rh-Audit_Higie.csv"),[Delimiter=";", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    Cabecalhos = Table.PromoteHeaders(Fonte, [PromoteAllScalars=true]),
+				    Tipos = Table.TransformColumnTypes(Cabecalhos,{{"Tabela", type text}, {"ObjetosAntes", Int64.Type}, {"ObjetosDepois", Int64.Type}, {"Removidos", Int64.Type}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table

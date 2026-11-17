@@ -1,0 +1,124 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1662.9508261282917,
+            "y": 116.69979793496907
+          },
+          "nodeIndex": "_Medidas RH",
+          "nodeLineageTag": "084c0a45-9ea4-479b-bf63-b8f101eb0e3d",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 998.37074388834162,
+            "y": 63.90745902657163
+          },
+          "nodeIndex": "dCalendario",
+          "nodeLineageTag": "6d59e329-030f-4393-a9d2-269f2950cf16",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 1007.7097107639534,
+            "y": 879.60126633204641
+          },
+          "nodeIndex": "dCargo",
+          "nodeLineageTag": "8d341164-cdf1-48ff-a7c3-da90062387ed",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 1008.2787015971769,
+            "y": 451.57985914507458
+          },
+          "nodeIndex": "fVinculosRH",
+          "nodeLineageTag": "aa860cea-5619-493b-ad79-bae5d1ebc114",
+          "size": {
+            "height": 355.71428571428584,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 1666.8547160951903,
+            "y": 639.713278105716
+          },
+          "nodeIndex": "stgFuncionarios",
+          "nodeLineageTag": "6fcb89ef-9243-4b3c-9705-888f2a5be429",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 1664.867282601771,
+            "y": 440.23049583585885
+          },
+          "nodeIndex": "dEstado",
+          "nodeLineageTag": "4163c0a9-8ce5-47b3-8aca-3ba9e88382ce",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 1335.6831058561754,
+            "y": 520.94282778160186
+          },
+          "nodeIndex": "dNivel",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 676.9667141523895,
+            "y": 540.86367570921357
+          },
+          "nodeIndex": "dArea",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas as tabelas",
+      "zoomValue": 70,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas as tabelas",
+  "defaultDiagram": "Todas as tabelas"
+}

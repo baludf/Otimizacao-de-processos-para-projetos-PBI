@@ -1,0 +1,6 @@
+createOrReplace
+
+	relationship 42cce577-cb9f-a39c-289e-31ff45afdea5
+		fromColumn: fVinculosRH.'Data Contratação'
+		toColumn: dCalendario.Data
+

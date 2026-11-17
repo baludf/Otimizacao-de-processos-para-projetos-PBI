@@ -1,0 +1,6 @@
+createOrReplace
+
+	relationship AutoDetected_47106bb4-617f-4337-a5cd-1d959dd6b34c
+		fromColumn: fVinculosRH.Área
+		toColumn: dArea.Área
+

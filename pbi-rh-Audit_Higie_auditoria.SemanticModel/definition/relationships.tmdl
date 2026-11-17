@@ -1,0 +1,43 @@
+relationship d21c6173-15e3-4e6e-a049-8b502976f79e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: stgFuncionarios.'Data de Nascimento'
+	toColumn: LocalDateTable_cf14291d-6606-44c3-bc1c-c1b772a0bd8f.Date
+
+relationship e304fd24-6f4d-4076-a156-86eeed8668f6
+	joinOnDateBehavior: datePartOnly
+	fromColumn: stgFuncionarios.'Data de Contratacao'
+	toColumn: LocalDateTable_9fbf330c-a63d-4710-8f16-d4400b2bae5f.Date
+
+relationship f74df79f-0d41-43ee-b9f7-79eb3444a835
+	joinOnDateBehavior: datePartOnly
+	fromColumn: stgFuncionarios.'Data de Demissao'
+	toColumn: LocalDateTable_882d33ab-1416-450e-a1ea-527ed74fea6b.Date
+
+relationship 42cce577-cb9f-a39c-289e-31ff45afdea5
+	fromColumn: fVinculosRH.'Data Contratação'
+	toColumn: dCalendario.Data
+
+relationship 9df99bf8-b3f8-19f7-6b08-387a02f129a7
+	isActive: false
+	fromColumn: fVinculosRH.'Data Demissão'
+	toColumn: dCalendario.Data
+
+relationship 5618b33b-0957-95df-d88f-808f5598863d
+	fromColumn: fVinculosRH.Cargo
+	toColumn: dCargo.Cargo
+
+relationship AutoDetected_47106bb4-617f-4337-a5cd-1d959dd6b34c
+	fromColumn: fVinculosRH.Área
+	toColumn: dArea.Área
+
+relationship ac6c9b8c-aa68-86c6-383f-4ee10982864e
+	toCardinality: many
+	fromColumn: fVinculosRH.Nível
+	toColumn: dNivel.Nível
+
+relationship rel_auditoria_catalogo
+	fromCardinality: many
+	toCardinality: many
+	fromColumn: _Aud_Levantamento.Tabela
+	toColumn: '_Aud_CatalogoStatus'.Tabela
+

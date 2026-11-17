@@ -1,0 +1,754 @@
+/// Tabela dedicada às medidas do modelo de RH.
+table '_Medidas RH'
+	lineageTag: 084c0a45-9ea4-479b-bf63-b8f101eb0e3d
+
+	/// Quantidade de registros na fato de vínculos.
+	measure 'Registros RH' = COUNTROWS(fVinculosRH)
+		formatString: #,0
+		displayFolder: A. Base
+		lineageTag: 9ffbdb8f-f230-4c56-b058-c4569fa24de4
+
+	/// Quantidade de IDs RH distintos.
+	measure 'Vínculos Distintos' = DISTINCTCOUNT(fVinculosRH[ID RH])
+		formatString: #,0
+		displayFolder: A. Base
+		lineageTag: f279705c-bac2-4743-809a-e1998fe84efc
+
+	/// Menor data no contexto do calendário.
+	measure 'Data Início do Período' = MIN(dCalendario[Data])
+		formatString: dd/MM/yyyy
+		displayFolder: A. Base
+		lineageTag: 360680ad-2f66-4668-a5e6-eaa01de91739
+
+	/// Maior data selecionada limitada à data atual.
+	measure 'Data Fim do Período' = MIN(MAX(dCalendario[Data]),TODAY())
+		formatString: dd/MM/yyyy
+		displayFolder: A. Base
+		lineageTag: e6addbfd-2c23-4ae5-9ab3-9199efeee0a6
+
+	/// Rótulo textual do período vigente.
+	measure 'Período Selecionado' = FORMAT([Data Início do Período],"dd/MM/yyyy") & " a " & FORMAT([Data Fim do Período],"dd/MM/yyyy")
+		displayFolder: A. Base
+		lineageTag: 5f0399bf-d01a-4a48-a556-9548a16642f5
+
+	/// Vínculos vigentes na data final. A data de demissão é tratada como inclusiva.
+	measure 'Quadro no Fim do Período' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN
+			CALCULATE(
+			 DISTINCTCOUNT(fVinculosRH[ID RH]),
+			 KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),
+			 KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef)
+			)
+		formatString: #,0
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: 2a35d93b-367c-4a3d-8d4c-083c87e9bf09
+
+	/// Vínculos vigentes na data inicial. A data de demissão é tratada como inclusiva.
+	measure 'Quadro no Início do Período' =
+			VAR DataRef=[Data Início do Período]
+			RETURN
+			CALCULATE(
+			 DISTINCTCOUNT(fVinculosRH[ID RH]),
+			 KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),
+			 KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef)
+			)
+		formatString: #,0
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: 8dfde5a1-54ac-43f8-bf95-09b53c52eae9
+
+	/// Vínculos vigentes na data atual, independente do filtro de calendário.
+	measure 'Quadro Atual' =
+			VAR DataRef=TODAY()
+			RETURN
+			CALCULATE(
+			 DISTINCTCOUNT(fVinculosRH[ID RH]),
+			 REMOVEFILTERS(dCalendario),
+			 KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),
+			 KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef)
+			)
+		formatString: #,0
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: 1f0dd9a6-d54f-4ee5-bb3d-fdbee2e07c3c
+
+	/// Vínculos cuja contratação ocorreu no período selecionado.
+	measure Admissões =
+			VAR DataIni=[Data Início do Período]
+			VAR DataFim=[Data Fim do Período]
+			RETURN
+			CALCULATE(
+			 DISTINCTCOUNT(fVinculosRH[ID RH]),
+			 KEEPFILTERS(fVinculosRH[Data Contratação]>=DataIni),
+			 KEEPFILTERS(fVinculosRH[Data Contratação]<=DataFim)
+			)
+		formatString: #,0
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: 300f541b-5d7d-4d2c-a99f-37c1c740437e
+
+	/// Vínculos cuja demissão ocorreu no período selecionado.
+	measure Desligamentos =
+			VAR DataIni=[Data Início do Período]
+			VAR DataFim=[Data Fim do Período]
+			RETURN
+			CALCULATE(
+			 DISTINCTCOUNT(fVinculosRH[ID RH]),
+			 KEEPFILTERS(NOT ISBLANK(fVinculosRH[Data Demissão])),
+			 KEEPFILTERS(fVinculosRH[Data Demissão]>=DataIni),
+			 KEEPFILTERS(fVinculosRH[Data Demissão]<=DataFim)
+			)
+		formatString: #,0
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: 0ab75089-0177-476f-8783-761f57e3e4a9
+
+	/// Admissões menos desligamentos no período.
+	measure 'Saldo de Movimentação' = [Admissões]-[Desligamentos]
+		formatString: +#,0;-#,0;0
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: 5f76748e-6478-417f-81b8-b9a4e2c9cc62
+
+	/// Média dos quadros observados ao final de cada mês selecionado até a data atual.
+	measure 'Quadro Médio Mensal' =
+			VAR DataFim=[Data Fim do Período]
+			VAR MesesValidos=FILTER(VALUES(dCalendario[Ano Mês]),CALCULATE(MIN(dCalendario[Data]))<=DataFim)
+			RETURN AVERAGEX(MesesValidos,CALCULATE([Quadro no Fim do Período]))
+		formatString: #,0.0
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: aa2ad43d-2bfe-40c4-a4b2-23141575b674
+
+	/// Definição analítica: desligamentos do período divididos pelo quadro médio mensal. Não representa fórmula corporativa confirmada.
+	measure 'Índice de Desligamento %' = DIVIDE([Desligamentos],[Quadro Médio Mensal])
+		formatString: 0.0%
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: b88876d1-0c45-4f72-b5b0-b851a23a9fb0
+
+	/// Variação relativa entre o quadro final e inicial.
+	measure 'Variação Líquida do Quadro %' = DIVIDE([Quadro no Fim do Período]-[Quadro no Início do Período],[Quadro no Início do Período])
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: df863549-0d8a-455e-8607-b9ab038233cb
+
+	/// Vínculos vigentes doze meses antes da data final.
+	measure 'Quadro Há 12 Meses' =
+			VAR DataRef=EDATE([Data Fim do Período],-12)
+			RETURN
+			CALCULATE(
+			 DISTINCTCOUNT(fVinculosRH[ID RH]),
+			 REMOVEFILTERS(dCalendario),
+			 KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),
+			 KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef)
+			)
+		formatString: #,0
+		displayFolder: F. Temporal
+		lineageTag: 549b8538-1d72-42a3-a10c-40454e6719a7
+
+	/// Variação do quadro final em relação à mesma data doze meses antes.
+	measure 'Variação Quadro 12M %' = DIVIDE([Quadro no Fim do Período]-[Quadro Há 12 Meses],[Quadro Há 12 Meses])
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: F. Temporal
+		lineageTag: 928fcbee-5d6d-4ff6-9cc6-e9f760cc0333
+
+	/// Soma do salário base dos vínculos vigentes na data final.
+	measure 'Salário Base Mensal Ativo' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(SUM(fVinculosRH[Salário Base]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: R$ #,0.00
+		displayFolder: C. Financeiro
+		lineageTag: 1179af64-d6ac-4002-bf91-8f1ddd81bfc0
+
+	/// Soma dos impostos registrados para vínculos vigentes na data final.
+	measure 'Impostos Mensais Ativos' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(SUM(fVinculosRH[Impostos]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: R$ #,0.00
+		displayFolder: C. Financeiro
+		lineageTag: 84bc52a6-f323-4e30-a196-4b5aa7322960
+
+	/// Soma dos benefícios registrados para vínculos vigentes na data final.
+	measure 'Benefícios Mensais Ativos' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(SUM(fVinculosRH[Benefícios]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: R$ #,0.00
+		displayFolder: C. Financeiro
+		lineageTag: 7bb6e8df-1dc4-4437-b2d2-67a97790bcfd
+
+	/// Soma do VT registrado para vínculos vigentes na data final.
+	measure 'VT Mensal Ativo' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(SUM(fVinculosRH[VT]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: R$ #,0.00
+		displayFolder: C. Financeiro
+		lineageTag: 39725f53-69b4-443b-a379-4ab5496efcc6
+
+	/// Soma do VR registrado para vínculos vigentes na data final.
+	measure 'VR Mensal Ativo' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(SUM(fVinculosRH[VR]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: R$ #,0.00
+		displayFolder: C. Financeiro
+		lineageTag: 7d549c96-ce30-4eac-9a58-d874dcd7ec53
+
+	/// Soma dos quatro componentes adicionais existentes na fonte.
+	measure 'Encargos e Benefícios Registrados' = [Impostos Mensais Ativos]+[Benefícios Mensais Ativos]+[VT Mensal Ativo]+[VR Mensal Ativo]
+		formatString: R$ #,0.00
+		displayFolder: C. Financeiro
+		lineageTag: c404b29c-dae4-4892-b26f-e385f3373f28
+
+	/// Soma descritiva de salário base, impostos, benefícios, VT e VR registrados. Não equivale a custo contábil completo confirmado.
+	measure 'Custo Mensal Registrado' = [Salário Base Mensal Ativo]+[Encargos e Benefícios Registrados]
+		formatString: R$ #,0.00
+		displayFolder: C. Financeiro
+		lineageTag: 4e83e8e6-0345-4fc9-9513-88c2a84a455c
+
+	/// Custo mensal registrado dividido pelo quadro final.
+	measure 'Custo Médio por Vínculo Ativo' = DIVIDE([Custo Mensal Registrado],[Quadro no Fim do Período])
+		formatString: R$ #,0.00
+		displayFolder: C. Financeiro
+		lineageTag: 23cf6d56-7e65-4b98-9447-01601e7bedb5
+
+	/// Componentes adicionais registrados divididos pelo salário base ativo.
+	measure 'Adicionais sobre Salário Base %' = DIVIDE([Encargos e Benefícios Registrados],[Salário Base Mensal Ativo])
+		formatString: 0.0%
+		displayFolder: C. Financeiro
+		lineageTag: c8d61c3a-107e-490c-aa29-074f88c249a0
+
+	/// Soma do saldo de férias registrado para vínculos vigentes. A unidade segue a fonte.
+	measure 'Férias Acumuladas Ativos' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(SUM(fVinculosRH[Férias Acumuladas]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: #,0
+		displayFolder: D. Férias e Horas Extras
+		lineageTag: b43bc15c-e01a-481d-95f8-9a7ea8811eb0
+
+	/// Saldo médio de férias registrado por vínculo ativo.
+	measure 'Férias Médias por Ativo' = DIVIDE([Férias Acumuladas Ativos],[Quadro no Fim do Período])
+		formatString: #,0.0
+		displayFolder: D. Férias e Horas Extras
+		lineageTag: 194c9edf-4b5b-4d7d-906e-a4baaa39b73b
+
+	/// Soma das horas extras registradas para vínculos vigentes.
+	measure 'Horas Extras Ativos' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(SUM(fVinculosRH[Horas Extras]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: #,0
+		displayFolder: D. Férias e Horas Extras
+		lineageTag: 5f0b7c2c-db6a-44a3-a8b9-ae714691df17
+
+	/// Horas extras médias registradas por vínculo ativo.
+	measure 'Horas Extras Médias por Ativo' = DIVIDE([Horas Extras Ativos],[Quadro no Fim do Período])
+		formatString: #,0.0
+		displayFolder: D. Férias e Horas Extras
+		lineageTag: 288008aa-4f91-4608-b06e-df4f2a4d16ca
+
+	/// Média da avaliação dos vínculos vigentes na data final. Escala observada de 0 a 10.
+	measure 'Avaliação Média Ativos' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(AVERAGE(fVinculosRH[Avaliação do Funcionário]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: 0.00
+		displayFolder: E. Desempenho
+		lineageTag: d1de305b-9a8c-45ec-934e-c7e6bff4f308
+
+	/// Média da competência Trabalho em Equipe entre vínculos vigentes.
+	measure 'Trabalho em Equipe Médio' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(AVERAGE(fVinculosRH[Trabalho em Equipe]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: 0.00
+		displayFolder: E. Desempenho
+		lineageTag: e7105b46-4055-4af0-b2c5-28ef4675b702
+
+	/// Média da competência Liderança entre vínculos vigentes.
+	measure 'Liderança Média' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(AVERAGE(fVinculosRH[Liderança]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: 0.00
+		displayFolder: E. Desempenho
+		lineageTag: da756174-0566-4667-a5be-105e760ce55d
+
+	/// Média da competência Comunicação entre vínculos vigentes.
+	measure 'Comunicação Média' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(AVERAGE(fVinculosRH[Comunicação]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: 0.00
+		displayFolder: E. Desempenho
+		lineageTag: be3ed798-b7a9-4949-b9ec-9ff2b900983b
+
+	/// Média da competência Iniciativa entre vínculos vigentes.
+	measure 'Iniciativa Média' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(AVERAGE(fVinculosRH[Iniciativa]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: 0.00
+		displayFolder: E. Desempenho
+		lineageTag: c61e4e93-093f-48eb-b37f-2169561fde10
+
+	/// Média da competência Organização entre vínculos vigentes.
+	measure 'Organização Média' =
+			VAR DataRef=[Data Fim do Período]
+			RETURN CALCULATE(AVERAGE(fVinculosRH[Organização]),KEEPFILTERS(fVinculosRH[Data Contratação]<=DataRef),KEEPFILTERS(ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+		formatString: 0.00
+		displayFolder: E. Desempenho
+		lineageTag: f1aed5cd-19d9-4891-b42c-14961eba0a97
+
+	/// Competência com maior média entre as cinco dimensões avaliadas.
+	measure 'Competência Destaque' =
+			VAR Base=[Avaliação Média Ativos]
+			VAR T=UNION(ROW("Competência","Trabalho em Equipe","Valor",[Trabalho em Equipe Médio]),ROW("Competência","Liderança","Valor",[Liderança Média]),ROW("Competência","Comunicação","Valor",[Comunicação Média]),ROW("Competência","Iniciativa","Valor",[Iniciativa Média]),ROW("Competência","Organização","Valor",[Organização Média]))
+			RETURN IF(ISBLANK(Base),BLANK(),CONCATENATEX(TOPN(1,T,[Valor],DESC,[Competência],ASC),[Competência],""))
+		displayFolder: E. Desempenho
+		lineageTag: 53223419-4d9d-4aa6-b78a-c2a340cad7e1
+
+	/// Competência com menor média entre as cinco dimensões avaliadas.
+	measure 'Competência com Menor Média' =
+			VAR Base=[Avaliação Média Ativos]
+			VAR T=UNION(ROW("Competência","Trabalho em Equipe","Valor",[Trabalho em Equipe Médio]),ROW("Competência","Liderança","Valor",[Liderança Média]),ROW("Competência","Comunicação","Valor",[Comunicação Média]),ROW("Competência","Iniciativa","Valor",[Iniciativa Média]),ROW("Competência","Organização","Valor",[Organização Média]))
+			RETURN IF(ISBLANK(Base),BLANK(),CONCATENATEX(TOPN(1,T,[Valor],ASC,[Competência],ASC),[Competência],""))
+		displayFolder: E. Desempenho
+		lineageTag: 31068e2f-3493-4d55-ba33-8e7be7c3a70d
+
+	/// Diferença entre a maior e a menor média das competências, sem criar nota composta.
+	measure 'Amplitude entre Competências' =
+			VAR T=UNION(
+			 ROW("Valor",[Trabalho em Equipe Médio]),ROW("Valor",[Liderança Média]),ROW("Valor",[Comunicação Média]),ROW("Valor",[Iniciativa Média]),ROW("Valor",[Organização Média])
+			)
+			RETURN MAXX(T,[Valor])-MINX(T,[Valor])
+		formatString: 0.00
+		displayFolder: E. Desempenho
+		lineageTag: 42beab93-faae-4085-b42c-9f4c320e4e19
+
+	/// Tempo médio entre contratação e data final para os vínculos vigentes.
+	measure 'Tempo Médio de Casa (Anos)' =
+			VAR DataRef=[Data Fim do Período]
+			VAR Ativos=FILTER(fVinculosRH,fVinculosRH[Data Contratação]<=DataRef && (ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+			RETURN AVERAGEX(Ativos,DIVIDE(DATEDIFF(fVinculosRH[Data Contratação],DataRef,DAY),365.2425))
+		formatString: 0.0
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: b9b10ff1-cb76-4e80-b290-797313d78643
+
+	/// Participação de registros com sexo F no quadro final.
+	measure 'Participação Feminina %' =
+			VAR Mulheres=CALCULATE([Quadro no Fim do Período],KEEPFILTERS(fVinculosRH[Sexo]="F"))
+			RETURN DIVIDE(Mulheres,[Quadro no Fim do Período])
+		formatString: 0.0%
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: d7250ed8-dee8-490a-9b51-6e29766f7161
+
+	/// Participação feminina entre os níveis Gerente e Diretor.
+	measure 'Participação Feminina na Liderança %' =
+			VAR TotalLideranca=
+			 CALCULATE([Quadro no Fim do Período],KEEPFILTERS('dNivel'[Nível] IN {"Gerente","Diretor"}))
+			VAR MulheresLideranca=
+			 CALCULATE([Quadro no Fim do Período],KEEPFILTERS('dNivel'[Nível] IN {"Gerente","Diretor"}),KEEPFILTERS(fVinculosRH[Sexo]="F"))
+			RETURN DIVIDE(MulheresLideranca,TotalLideranca)
+		formatString: 0.0%
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: 6e29a3aa-def3-4e64-a023-78d02cc693e5
+
+	/// Índice Herfindahl-Hirschman do quadro entre as áreas selecionadas; quanto maior, maior a concentração.
+	measure 'Concentração do Quadro por Área (HHI)' =
+			VAR TotalSelecionado=CALCULATE([Quadro no Fim do Período],ALLSELECTED(dArea[Área]))
+			RETURN SUMX(ALLSELECTED(dArea[Área]),VAR Parte=DIVIDE(CALCULATE([Quadro no Fim do Período]),TotalSelecionado) RETURN Parte*Parte)
+		formatString: 0.000
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: af6e8b77-36c6-4e20-aad5-ae64fd629110
+
+	/// Área com maior quadro no contexto selecionado.
+	measure 'Área com Maior Quadro' =
+			VAR Q=[Quadro no Fim do Período]
+			RETURN IF(ISBLANK(Q),BLANK(),VAR T=ADDCOLUMNS(ALLSELECTED(dArea[Área]),"Quadro",[Quadro no Fim do Período]) RETURN CONCATENATEX(TOPN(1,T,[Quadro],DESC,dArea[Área],ASC),dArea[Área],""))
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: 533c639a-4eee-47c6-a77b-2bfc62eccde1
+
+	/// Nível organizacional com maior quadro no contexto selecionado.
+	measure 'Nível com Maior Quadro' =
+			VAR Q=[Quadro no Fim do Período]
+			RETURN IF(ISBLANK(Q),BLANK(),VAR T=ADDCOLUMNS(ALLSELECTED('dNivel'[Nível]),"Quadro",[Quadro no Fim do Período]) RETURN CONCATENATEX(TOPN(1,T,[Quadro],DESC,'dNivel'[Nível],ASC),'dNivel'[Nível],""))
+		displayFolder: B. Quadro e Movimentação
+		lineageTag: 648c1d78-75ce-4668-bd58-57f39f98d9d9
+
+	/// Registros com falha crítica nas regras objetivas de qualidade.
+	measure 'Registros com Erro Crítico' = CALCULATE(COUNTROWS(fVinculosRH),KEEPFILTERS(fVinculosRH[Flag Registro Inválido]=TRUE()))
+		formatString: #,0
+		displayFolder: G. Qualidade
+		lineageTag: 2ac211e8-1dd9-4241-bbdd-8f4fbe6ac56c
+
+	/// Registros com idade calculada inferior a 18 anos na admissão.
+	measure 'Registros com Alerta de Idade' = CALCULATE(COUNTROWS(fVinculosRH),KEEPFILTERS(fVinculosRH[Flag Idade Admissão Menor 18]=TRUE()))
+		formatString: #,0
+		displayFolder: G. Qualidade
+		lineageTag: eef7bcc0-e008-4614-9abb-b1db00e260fd
+
+	/// Proporção de registros com alerta de idade na admissão.
+	measure 'Registros com Alerta de Idade %' = DIVIDE([Registros com Alerta de Idade],[Registros RH])
+		formatString: 0.0%
+		displayFolder: G. Qualidade
+		lineageTag: 6ed81c31-6663-4264-a238-45633a8f923a
+
+	/// Payload Gold mínimo para as páginas Capa e Análises HTML. Não contém nome, endereço, nascimento, imagem ou ID RH.
+	measure 'JSON Gold Dashboard RH' =
+			VAR q=UNICHAR(34)
+			VAR bs=UNICHAR(92)
+			VAR DataIni=[Data Início do Período]
+			VAR DataFim=[Data Fim do Período]
+			VAR AreaTxt=IF(ISFILTERED(dArea[Área]),CONCATENATEX(VALUES(dArea[Área]),dArea[Área],", ",dArea[Área],ASC),"Todos")
+			VAR CargoTxt=IF(ISFILTERED(dCargo[Cargo]),CONCATENATEX(VALUES(dCargo[Cargo]),dCargo[Cargo],", ",dCargo[Cargo],ASC),"Todos")
+			VAR NivelTxt=IF(ISFILTERED('//dNivel'[Nível]),CONCATENATEX(VALUES('//dNivel'[Nível]),'//dNivel'[Nível],", ",'//dNivel'[Nível],ASC),"Todos")
+			VAR SexoTxt=IF(ISFILTERED(fVinculosRH[Sexo]),CONCATENATEX(VALUES(fVinculosRH[Sexo]),fVinculosRH[Sexo],", ",fVinculosRH[Sexo],ASC),"Todos")
+			VAR CivilTxt=IF(ISFILTERED(fVinculosRH[Estado Civil]),CONCATENATEX(VALUES(fVinculosRH[Estado Civil]),fVinculosRH[Estado Civil],", ",fVinculosRH[Estado Civil],ASC),"Todos")
+			VAR AreaEsc=SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(AreaTxt,bs,bs&bs),q,bs&q),UNICHAR(10),bs&"n")
+			VAR CargoEsc=SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(CargoTxt,bs,bs&bs),q,bs&q),UNICHAR(10),bs&"n")
+			VAR NivelEsc=SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(NivelTxt,bs,bs&bs),q,bs&q),UNICHAR(10),bs&"n")
+			VAR SexoEsc=SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SexoTxt,bs,bs&bs),q,bs&q),UNICHAR(10),bs&"n")
+			VAR CivilEsc=SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(CivilTxt,bs,bs&bs),q,bs&q),UNICHAR(10),bs&"n")
+			VAR Quadro=[Quadro no Fim do Período]
+			VAR Admissoes=[Admissões]
+			VAR Desligamentos=[Desligamentos]
+			VAR Saldo=[Saldo de Movimentação]
+			VAR Indice=[Índice de Desligamento %]
+			VAR Custo=[Custo Mensal Registrado]
+			VAR Avaliacao=[Avaliação Média Ativos]
+			VAR TempoCasa=[Tempo Médio de Casa (Anos)]
+			VAR Mulheres=[Participação Feminina %]
+			VAR HHI=[Concentração do Quadro por Área (HHI)]
+			VAR MesesBase=
+			 TOPN(
+			  24,
+			  FILTER(
+			   SUMMARIZE(dCalendario,dCalendario[Ano Mês],dCalendario[Ano Mês Ordem]),
+			   VAR InicioMes=DATE(INT(dCalendario[Ano Mês Ordem]/100),MOD(dCalendario[Ano Mês Ordem],100),1)
+			   RETURN InicioMes<=DataFim && EOMONTH(InicioMes,0)>=DataIni
+			  ),
+			  dCalendario[Ano Mês Ordem],DESC
+			 )
+			VAR Serie=
+			 CONCATENATEX(
+			  MesesBase,
+			  VAR sQuadro=CALCULATE([Quadro no Fim do Período])
+			  VAR sAdm=CALCULATE([Admissões])
+			  VAR sDem=CALCULATE([Desligamentos])
+			  RETURN
+			   "{"&
+			   q&"periodo"&q&":"&q&dCalendario[Ano Mês]&q&","&
+			   q&"quadro"&q&":"&IF(ISBLANK(sQuadro),"null",FORMAT(sQuadro,"0","en-US"))&","&
+			   q&"admissoes"&q&":"&IF(ISBLANK(sAdm),"null",FORMAT(sAdm,"0","en-US"))&","&
+			   q&"desligamentos"&q&":"&IF(ISBLANK(sDem),"null",FORMAT(sDem,"0","en-US"))&
+			   "}",
+			  ",",dCalendario[Ano Mês Ordem],ASC
+			 )
+			VAR AreasBase=TOPN(8,ADDCOLUMNS(VALUES(dArea[Área]),"_quadro",CALCULATE([Quadro no Fim do Período]),"_custo",CALCULATE([Custo Mensal Registrado])),[_quadro],DESC,dArea[Área],ASC)
+			VAR AreasJson=
+			 CONCATENATEX(
+			  AreasBase,
+			  VAR NomeEsc=SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(dArea[Área],bs,bs&bs),q,bs&q),UNICHAR(10),bs&"n")
+			  RETURN "{"&q&"nome"&q&":"&q&NomeEsc&q&","&q&"quadro"&q&":"&IF(ISBLANK([_quadro]),"null",FORMAT([_quadro],"0","en-US"))&","&q&"custo"&q&":"&IF(ISBLANK([_custo]),"null",FORMAT([_custo],"0.00","en-US"))&"}",
+			  ",",[_quadro],DESC
+			 )
+			VAR CompetenciasJson=
+			 "{"&q&"nome"&q&":"&q&"Trabalho em Equipe"&q&","&q&"valor"&q&":"&IF(ISBLANK([Trabalho em Equipe Médio]),"null",FORMAT([Trabalho em Equipe Médio],"0.00","en-US"))&"},"&
+			 "{"&q&"nome"&q&":"&q&"Liderança"&q&","&q&"valor"&q&":"&IF(ISBLANK([Liderança Média]),"null",FORMAT([Liderança Média],"0.00","en-US"))&"},"&
+			 "{"&q&"nome"&q&":"&q&"Comunicação"&q&","&q&"valor"&q&":"&IF(ISBLANK([Comunicação Média]),"null",FORMAT([Comunicação Média],"0.00","en-US"))&"},"&
+			 "{"&q&"nome"&q&":"&q&"Iniciativa"&q&","&q&"valor"&q&":"&IF(ISBLANK([Iniciativa Média]),"null",FORMAT([Iniciativa Média],"0.00","en-US"))&"},"&
+			 "{"&q&"nome"&q&":"&q&"Organização"&q&","&q&"valor"&q&":"&IF(ISBLANK([Organização Média]),"null",FORMAT([Organização Média],"0.00","en-US"))&"}"
+			RETURN
+			"{"&
+			q&"meta"&q&":{"&
+			 q&"periodoInicio"&q&":"&q&FORMAT(DataIni,"yyyy-MM-dd","en-US")&q&","&
+			 q&"periodoFim"&q&":"&q&FORMAT(DataFim,"yyyy-MM-dd","en-US")&q&","&
+			 q&"atualizadoEm"&q&":"&q&FORMAT(TODAY(),"yyyy-MM-dd","en-US")&q&","&
+			 q&"filtros"&q&":{"&
+			  q&"area"&q&":"&q&AreaEsc&q&","&q&"cargo"&q&":"&q&CargoEsc&q&","&q&"nivel"&q&":"&q&NivelEsc&q&","&q&"sexo"&q&":"&q&SexoEsc&q&","&q&"estadoCivil"&q&":"&q&CivilEsc&q&
+			 "}"&
+			"},"&
+			q&"kpis"&q&":{"&
+			 q&"quadro"&q&":"&IF(ISBLANK(Quadro),"null",FORMAT(Quadro,"0","en-US"))&","&
+			 q&"admissoes"&q&":"&IF(ISBLANK(Admissoes),"null",FORMAT(Admissoes,"0","en-US"))&","&
+			 q&"desligamentos"&q&":"&IF(ISBLANK(Desligamentos),"null",FORMAT(Desligamentos,"0","en-US"))&","&
+			 q&"saldo"&q&":"&IF(ISBLANK(Saldo),"null",FORMAT(Saldo,"0","en-US"))&","&
+			 q&"indiceDesligamento"&q&":"&IF(ISBLANK(Indice),"null",FORMAT(Indice,"0.0000","en-US"))&","&
+			 q&"custoMensalRegistrado"&q&":"&IF(ISBLANK(Custo),"null",FORMAT(Custo,"0.00","en-US"))&","&
+			 q&"avaliacaoMedia"&q&":"&IF(ISBLANK(Avaliacao),"null",FORMAT(Avaliacao,"0.00","en-US"))&","&
+			 q&"tempoMedioCasaAnos"&q&":"&IF(ISBLANK(TempoCasa),"null",FORMAT(TempoCasa,"0.00","en-US"))&","&
+			 q&"participacaoFeminina"&q&":"&IF(ISBLANK(Mulheres),"null",FORMAT(Mulheres,"0.0000","en-US"))&","&
+			 q&"concentracaoAreaHHI"&q&":"&IF(ISBLANK(HHI),"null",FORMAT(HHI,"0.0000","en-US"))&
+			"},"&
+			q&"series"&q&":["&Serie&"],"&
+			q&"rankings"&q&":{"&q&"areas"&q&":["&AreasJson&"]},"&
+			q&"competencias"&q&":["&CompetenciasJson&"],"&
+			q&"insights"&q&":{"&
+			 q&"maiorArea"&q&":"&IF(ISBLANK([Área com Maior Quadro]),"null",q&SUBSTITUTE(SUBSTITUTE([Área com Maior Quadro],bs,bs&bs),q,bs&q)&q)&","&
+			 q&"maiorNivel"&q&":"&IF(ISBLANK([Nível com Maior Quadro]),"null",q&SUBSTITUTE(SUBSTITUTE([Nível com Maior Quadro],bs,bs&bs),q,bs&q)&q)&","&
+			 q&"competenciaDestaque"&q&":"&IF(ISBLANK([Competência Destaque]),"null",q&SUBSTITUTE(SUBSTITUTE([Competência Destaque],bs,bs&bs),q,bs&q)&q)&","&
+			 q&"competenciaMenorMedia"&q&":"&IF(ISBLANK([Competência com Menor Média]),"null",q&SUBSTITUTE(SUBSTITUTE([Competência com Menor Média],bs,bs&bs),q,bs&q)&q)&
+			"},"&
+			q&"qualidade"&q&":{"&
+			 q&"errosCriticos"&q&":"&FORMAT(COALESCE([Registros com Erro Crítico],0),"0","en-US")&","&
+			 q&"alertasIdadeAdmissao"&q&":"&FORMAT(COALESCE([Registros com Alerta de Idade],0),"0","en-US")&
+			"}"&
+			"}"
+		displayFolder: H. Integração
+		lineageTag: 98ac9c6c-622b-49ed-9e37-2912e3104fc3
+
+	/// Quantidade de caracteres do payload Gold.
+	measure 'JSON Gold Tamanho' = LEN([JSON Gold Dashboard RH])
+		formatString: #,0
+		displayFolder: H. Integração
+		lineageTag: 47fbf98d-7f20-47d9-bcd9-9a5f97c62f08
+
+	/// Diagnóstico estrutural básico; não substitui parser JSON real.
+	measure 'JSON Gold Diagnóstico' =
+			VAR s=[JSON Gold Dashboard RH]
+			VAR AbreObjeto=LEFT(s,1)="{"
+			VAR FechaObjeto=RIGHT(s,1)="}"
+			VAR SemVirgulaDupla=NOT CONTAINSSTRING(s,",,")
+			VAR Chaves=CONTAINSSTRING(s,UNICHAR(34)&"meta"&UNICHAR(34)) && CONTAINSSTRING(s,UNICHAR(34)&"kpis"&UNICHAR(34)) && CONTAINSSTRING(s,UNICHAR(34)&"series"&UNICHAR(34)) && CONTAINSSTRING(s,UNICHAR(34)&"rankings"&UNICHAR(34)) && CONTAINSSTRING(s,UNICHAR(34)&"competencias"&UNICHAR(34))
+			RETURN IF(AbreObjeto && FechaObjeto && SemVirgulaDupla && Chaves,"Estrutura básica OK","Revisar estrutura")
+		displayFolder: H. Integração
+		lineageTag: 5aca755d-c3fa-4561-92a0-3394c1705eed
+
+	/// Composição HTML/CSS executiva sem JavaScript, fontes externas, APIs ou PII. Usa medidas do modelo como única fonte de regras de negócio.
+	measure 'HTML Dashboard RH' =
+			VAR Quadro=[Quadro no Fim do Período]
+			VAR Custo=[Custo Mensal Registrado]
+			VAR Indice=[Índice de Desligamento %]
+			VAR Avaliacao=[Avaliação Média Ativos]
+			VAR Var12=[Variação Quadro 12M %]
+			VAR Mulheres=[Participação Feminina %]
+			VAR HHI=[Concentração do Quadro por Área (HHI)]
+			VAR MaiorArea=[Área com Maior Quadro]
+			VAR MaiorNivel=[Nível com Maior Quadro]
+			VAR CompDestaque=[Competência Destaque]
+			VAR CompMenor=[Competência com Menor Média]
+			VAR AlertaIdade=[Registros com Alerta de Idade]
+			VAR TextoVar=IF(ISBLANK(Var12),"Sem base comparável",FORMAT(Var12,"+0.0%;-0.0%;0.0%","pt-BR")&" em 12 meses")
+			VAR CorVar=IF(Var12>0,"rh-blue",IF(Var12<0,"rh-amber","rh-muted"))
+			VAR HtmlVazio="<div class='rh-root rh-empty' role='status'><div><strong>Sem dados para o recorte atual</strong><span>Revise os filtros de período, área, cargo, nível ou perfil.</span></div></div>"
+			VAR HtmlBody="<div class='rh-root' role='region' aria-label='Painel executivo de recursos humanos'>
+			<header class='rh-header'><div><div class='rh-eyebrow'>People analytics</div><div class='rh-title'>Panorama de Pessoas</div><div class='rh-sub'>Quadro, movimentação, custo registrado e desenvolvimento</div></div><div class='rh-context'><strong>Período analisado</strong><br>"&[Período Selecionado]&"</div></header>
+			<section class='rh-kpis' aria-label='Indicadores principais'>
+			<article class='rh-card rh-kpi-primary'><div class='rh-label'>Quadro no fim do período</div><div class='rh-value'>"&FORMAT(Quadro,"#,0","pt-BR")&"</div><div class='rh-note "&CorVar&"'>"&TextoVar&"</div></article>
+			<article class='rh-card'><div class='rh-label'>Custo mensal registrado</div><div class='rh-value'>R$ "&FORMAT(DIVIDE(Custo,1000000),"0.00","pt-BR")&" mi</div><div class='rh-note'>Salário + componentes da fonte</div></article>
+			<article class='rh-card'><div class='rh-label'>Índice de desligamento</div><div class='rh-value'>"&IF(ISBLANK(Indice),"—",FORMAT(Indice,"0.0%","pt-BR"))&"</div><div class='rh-note'>Desligamentos ÷ quadro médio</div></article>
+			<article class='rh-card'><div class='rh-label'>Avaliação média</div><div class='rh-value'>"&FORMAT(Avaliacao,"0.00","pt-BR")&"</div><div class='rh-note'>Escala observada de 0 a 10</div></article>
+			</section>
+			<section class='rh-main'>
+			<article class='rh-card'><div class='rh-section-title'>Evolução do quadro</div><div class='rh-section-sub'>12 meses até a última movimentação do recorte</div>"&[SVG Tendência Quadro RH]&"</article>
+			<aside class='rh-card rh-insight'><div class='rh-eyebrow'>Leitura do recorte</div><h3>"&MaiorArea&" concentra o maior quadro; "&CompDestaque&" é a competência com maior média.</h3><div class='rh-insight-grid'><div class='rh-pill'><small>Nível mais frequente</small><strong>"&MaiorNivel&"</strong></div><div class='rh-pill'><small>Menor média de competência</small><strong>"&CompMenor&"</strong></div><div class='rh-pill'><small>Participação feminina</small><strong>"&FORMAT(Mulheres,"0.0%","pt-BR")&"</strong></div><div class='rh-pill'><small>Concentração por área (HHI)</small><strong>"&FORMAT(HHI,"0.000","pt-BR")&"</strong></div></div><div class='rh-quality'>Qualidade da fonte: "&FORMAT(AlertaIdade,"#,0","pt-BR")&" registros com possível idade inferior a 18 anos na admissão.</div></aside>
+			</section>
+			<section class='rh-bottom'><article class='rh-card'><div class='rh-section-title'>Distribuição por área</div><div class='rh-section-sub'>Vínculos vigentes na data final</div>"&[HTML Ranking Áreas RH]&"</article><article class='rh-card'><div class='rh-section-title'>Perfil de competências</div><div class='rh-section-sub'>Médias dos vínculos vigentes • escala 0 a 10</div>"&[HTML Competências RH]&"</article></section>
+			</div>"
+			RETURN [HTML CSS RH]&IF(ISBLANK(Quadro),HtmlVazio,HtmlBody)
+		displayFolder: I. Apresentação HTML
+		lineageTag: b2a17e77-3bd7-4387-865a-b6b695c91593
+		dataCategory: WebUrl
+
+	measure 'HTML CSS RH' =
+			"<style>
+			.rh-root{--rh-navy:#0b1f3a;--rh-blue:#3569e8;--rh-teal:#168f84;--rh-amber:#d58b21;--rh-bg:#f3f6fa;--rh-card:#fff;--rh-text:#172033;--rh-muted:#67748a;--rh-line:#dfe6ef;font-family:'Segoe UI',Arial,sans-serif;color:var(--rh-text);background:var(--rh-bg);padding:20px;box-sizing:border-box;border-radius:18px;min-height:100%}
+			.rh-root *{box-sizing:border-box}.rh-header{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:16px}.rh-eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--rh-teal);font-weight:700}.rh-title{font-size:28px;line-height:1.1;margin:4px 0;color:var(--rh-navy);font-weight:750}.rh-sub{font-size:12px;color:var(--rh-muted)}.rh-context{text-align:right;padding:8px 12px;background:#e9eef7;border-radius:10px;color:var(--rh-navy);font-size:12px}
+			.rh-kpis{display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr;gap:12px;margin-bottom:12px}.rh-card{background:var(--rh-card);border:1px solid var(--rh-line);border-radius:14px;padding:15px;box-shadow:0 5px 18px rgba(23,32,51,.045)}.rh-kpi-primary{background:linear-gradient(135deg,var(--rh-navy),#183b68);color:#fff;border:0}.rh-label{font-size:11px;color:var(--rh-muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700}.rh-kpi-primary .rh-label{color:#b9cae2}.rh-value{font-size:25px;line-height:1.15;font-weight:760;margin-top:8px;color:var(--rh-navy)}.rh-kpi-primary .rh-value{font-size:32px;color:#fff}.rh-note{font-size:11px;color:var(--rh-muted);margin-top:5px}.rh-kpi-primary .rh-note{color:#d7e3f2}
+			.rh-main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(270px,.75fr);gap:12px;margin-bottom:12px}.rh-section-title{font-size:15px;color:var(--rh-navy);font-weight:720;margin-bottom:3px}.rh-section-sub{font-size:11px;color:var(--rh-muted);margin-bottom:10px}.rh-trend-wrap{height:170px}.rh-trend{width:100%;height:145px;overflow:visible}.rh-grid{stroke:#e9eef4;stroke-width:1}.rh-line{fill:none;stroke:var(--rh-blue);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.rh-axis{display:flex;justify-content:space-between;color:var(--rh-muted);font-size:10px;margin-top:-3px}
+			.rh-insight{background:#eef8f6;border-color:#cce8e3}.rh-insight h3{font-size:17px;line-height:1.25;color:var(--rh-navy);margin:6px 0 12px}.rh-insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.rh-pill{background:#fff;border:1px solid #d8ebe8;border-radius:10px;padding:9px}.rh-pill small{display:block;color:var(--rh-muted);font-size:10px}.rh-pill strong{display:block;color:var(--rh-navy);font-size:13px;margin-top:3px}.rh-quality{margin-top:10px;padding-top:9px;border-top:1px solid #cce8e3;font-size:11px;color:#526378}
+			.rh-bottom{display:grid;grid-template-columns:1fr 1fr;gap:12px}.rh-rank-row{margin-top:10px}.rh-rank-meta{display:flex;justify-content:space-between;font-size:12px}.rh-track,.rh-comp-track{height:7px;background:#edf1f6;border-radius:999px;overflow:hidden;margin-top:5px}.rh-track span{display:block;height:100%;background:linear-gradient(90deg,var(--rh-teal),#50b8ad);border-radius:999px}.rh-comp-row{display:grid;grid-template-columns:120px 1fr 36px;align-items:center;gap:8px;margin-top:10px;font-size:11px}.rh-comp-row strong{text-align:right;color:var(--rh-navy)}.rh-comp-track{margin:0}.rh-comp-track i{display:block;height:100%;background:linear-gradient(90deg,var(--rh-blue),#7f9ff4);border-radius:999px}.rh-blue{color:var(--rh-blue)}.rh-amber{color:var(--rh-amber)}.rh-muted{color:var(--rh-muted)}
+			.rh-empty{display:flex;min-height:420px;align-items:center;justify-content:center;text-align:center}.rh-empty strong{display:block;color:var(--rh-navy);font-size:20px}.rh-empty span{display:block;color:var(--rh-muted);font-size:12px;margin-top:6px}
+			@media(max-width:900px){.rh-kpis{grid-template-columns:1fr 1fr}.rh-main,.rh-bottom{grid-template-columns:1fr}.rh-context{text-align:left}.rh-header{align-items:flex-start;flex-direction:column}}@media(max-width:560px){.rh-kpis{grid-template-columns:1fr}.rh-root{padding:12px}.rh-title{font-size:23px}}@media(prefers-reduced-motion:reduce){.rh-root *{transition:none!important;animation:none!important}}
+			</style>"
+		isHidden
+		displayFolder: I. Apresentação HTML\Helpers
+		lineageTag: 04681233-a256-4eea-b78e-de488068c75b
+
+	measure 'HTML Ranking Áreas RH' =
+			VAR Areas=TOPN(5,ADDCOLUMNS(VALUES(dArea[Área]),"_quadro",CALCULATE([Quadro no Fim do Período])),[_quadro],DESC,dArea[Área],ASC)
+			VAR MaxArea=MAXX(Areas,[_quadro])
+			RETURN CONCATENATEX(Areas,VAR Pct=DIVIDE([_quadro],MaxArea) RETURN "<div class='rh-rank-row'><div class='rh-rank-meta'><span>"&dArea[Área]&"</span><strong>"&FORMAT([_quadro],"#,0","pt-BR")&"</strong></div><div class='rh-track'><span style='width:"&FORMAT(Pct,"0.0%","en-US")&"'></span></div></div>","",[_quadro],DESC)
+		isHidden
+		displayFolder: I. Apresentação HTML\Helpers
+		lineageTag: c7af4595-4251-4de8-823e-70102f570c34
+
+	measure 'HTML Competências RH' =
+			VAR T=UNION(ROW("_nome","Trabalho em equipe","_valor",[Trabalho em Equipe Médio]),ROW("_nome","Liderança","_valor",[Liderança Média]),ROW("_nome","Comunicação","_valor",[Comunicação Média]),ROW("_nome","Iniciativa","_valor",[Iniciativa Média]),ROW("_nome","Organização","_valor",[Organização Média]))
+			RETURN CONCATENATEX(T,"<div class='rh-comp-row'><span>"&[_nome]&"</span><div class='rh-comp-track'><i style='width:"&FORMAT(DIVIDE([_valor],10),"0.0%","en-US")&"'></i></div><strong>"&FORMAT([_valor],"0.00","pt-BR")&"</strong></div>","",[_valor],DESC)
+		isHidden
+		displayFolder: I. Apresentação HTML\Helpers
+		lineageTag: df9ea699-10e2-48a5-844d-9aebf961ef23
+
+	measure 'SVG Tendência Quadro RH' =
+			VAR DataIni = [Data Início do Período]
+			VAR DataFim = [Data Fim do Período]
+			VAR UltimaContratacao =
+			    CALCULATE(
+			        MAX(fVinculosRH[Data Contratação]),
+			        REMOVEFILTERS(dCalendario),
+			        KEEPFILTERS(fVinculosRH[Data Contratação] >= DataIni),
+			        KEEPFILTERS(fVinculosRH[Data Contratação] <= DataFim)
+			    )
+			VAR UltimaDemissao =
+			    CALCULATE(
+			        MAX(fVinculosRH[Data Demissão]),
+			        REMOVEFILTERS(dCalendario),
+			        KEEPFILTERS(NOT ISBLANK(fVinculosRH[Data Demissão])),
+			        KEEPFILTERS(fVinculosRH[Data Demissão] >= DataIni),
+			        KEEPFILTERS(fVinculosRH[Data Demissão] <= DataFim)
+			    )
+			VAR DataAncora = COALESCE(MAX(UltimaContratacao, UltimaDemissao), DataFim)
+			VAR B =
+			    TOPN(
+			        12,
+			        FILTER(
+			            SUMMARIZE(
+			                dCalendario,
+			                dCalendario[Ano Mês],
+			                dCalendario[Ano Mês Ordem]
+			            ),
+			            VAR InicioMes =
+			                DATE(
+			                    INT(dCalendario[Ano Mês Ordem] / 100),
+			                    MOD(dCalendario[Ano Mês Ordem], 100),
+			                    1
+			                )
+			            RETURN
+			                InicioMes <= DataAncora
+			                    && EOMONTH(InicioMes, 0) >= DataIni
+			        ),
+			        dCalendario[Ano Mês Ordem], DESC
+			    )
+			VAR T =
+			    ADDCOLUMNS(
+			        B,
+			        "_quadro", CALCULATE([Quadro no Fim do Período])
+			    )
+			VAR TValida = FILTER(T, NOT ISBLANK([_quadro]))
+			VAR N = COUNTROWS(TValida)
+			VAR MinQ = MINX(TValida, [_quadro])
+			VAR MaxQ = MAXX(TValida, [_quadro])
+			VAR Constante = MinQ = MaxQ
+			VAR Amp = MAX(1, MaxQ - MinQ)
+			VAR P =
+			    CONCATENATEX(
+			        TValida,
+			        VAR Pos = RANKX(TValida, dCalendario[Ano Mês Ordem],, ASC, DENSE)
+			        VAR Xp = 55 + DIVIDE((Pos - 1) * 470, MAX(1, N - 1))
+			        VAR Yp =
+			            IF(
+			                Constante,
+			                80,
+			                120 - DIVIDE(([_quadro] - MinQ) * 80, Amp)
+			            )
+			        RETURN
+			            FORMAT(Xp, "0.0", "en-US")
+			                & ","
+			                & FORMAT(Yp, "0.0", "en-US"),
+			        " ",
+			        dCalendario[Ano Mês Ordem], ASC
+			    )
+			VAR Pontos =
+			    CONCATENATEX(
+			        TValida,
+			        VAR Pos = RANKX(TValida, dCalendario[Ano Mês Ordem],, ASC, DENSE)
+			        VAR Xp = 55 + DIVIDE((Pos - 1) * 470, MAX(1, N - 1))
+			        VAR Yp =
+			            IF(
+			                Constante,
+			                80,
+			                120 - DIVIDE(([_quadro] - MinQ) * 80, Amp)
+			            )
+			        RETURN
+			            "<circle cx='" & FORMAT(Xp, "0.0", "en-US")
+			                & "' cy='" & FORMAT(Yp, "0.0", "en-US")
+			                & "' r='3.5' fill='#2F80ED' stroke='#FFFFFF' stroke-width='1.5'>"
+			                & "<title>" & dCalendario[Ano Mês] & ": "
+			                & FORMAT([_quadro], "#,0", "pt-BR") & " vínculos</title></circle>",
+			        "",
+			        dCalendario[Ano Mês Ordem], ASC
+			    )
+			VAR Pri =
+			    CONCATENATEX(
+			        TOPN(1, TValida, dCalendario[Ano Mês Ordem], ASC),
+			        dCalendario[Ano Mês],
+			        ""
+			    )
+			VAR Ult =
+			    CONCATENATEX(
+			        TOPN(1, TValida, dCalendario[Ano Mês Ordem], DESC),
+			        dCalendario[Ano Mês],
+			        ""
+			    )
+			VAR UltimoQ =
+			    MAXX(
+			        TOPN(1, TValida, dCalendario[Ano Mês Ordem], DESC),
+			        [_quadro]
+			    )
+			VAR UltimoY =
+			    IF(
+			        Constante,
+			        80,
+			        120 - DIVIDE((UltimoQ - MinQ) * 80, Amp)
+			    )
+			VAR RotulosY =
+			    IF(
+			        Constante,
+			        "<text x='47' y='84' text-anchor='end' fill='#6B7280' font-size='11'>"
+			            & FORMAT(MaxQ, "#,0", "pt-BR") & "</text>",
+			        "<text x='47' y='44' text-anchor='end' fill='#6B7280' font-size='11'>"
+			            & FORMAT(MaxQ, "#,0", "pt-BR") & "</text>"
+			            & "<text x='47' y='124' text-anchor='end' fill='#6B7280' font-size='11'>"
+			            & FORMAT(MinQ, "#,0", "pt-BR") & "</text>"
+			    )
+			VAR RotuloFinal =
+			    "<text x='525' y='" & FORMAT(MAX(18, UltimoY - 9), "0.0", "en-US")
+			        & "' text-anchor='end' fill='#16324F' font-size='11' font-weight='700'>"
+			        & FORMAT(UltimoQ, "#,0", "pt-BR") & "</text>"
+			VAR Grafico =
+			    "<div class='rh-trend-wrap'><svg class='rh-trend' viewBox='0 0 560 145' role='img' aria-label='Evolução mensal do quadro com valores entre "
+			        & FORMAT(MinQ, "#,0", "pt-BR") & " e " & FORMAT(MaxQ, "#,0", "pt-BR") & " vínculos'>"
+			        & "<line class='rh-grid' x1='55' y1='40' x2='525' y2='40'/>"
+			        & "<line class='rh-grid' x1='55' y1='80' x2='525' y2='80'/>"
+			        & "<line class='rh-grid' x1='55' y1='120' x2='525' y2='120'/>"
+			        & RotulosY
+			        & "<polyline class='rh-line' points='" & P & "'/>"
+			        & Pontos
+			        & RotuloFinal
+			        & "</svg><div class='rh-axis'><span>" & Pri & "</span><span>" & Ult & "</span></div></div>"
+			VAR SemSerie =
+			    "<div class='rh-trend-wrap' role='status'><span>Sem histórico mensal para o recorte atual.</span></div>"
+			RETURN
+			    IF(N = 0, SemSerie, Grafico)
+		isHidden
+		displayFolder: I. Apresentação HTML\Helpers
+		lineageTag: 69c2b4d7-a47d-4a2e-acba-d5917a049700
+
+	/// Capa executiva em HTML/CSS sem JavaScript, dependências externas ou PII.
+	measure 'HTML Capa RH' =
+			VAR Quadro=[Quadro no Fim do Período]
+			VAR Var12=[Variação Quadro 12M %]
+			VAR Custo=[Custo Mensal Registrado]
+			VAR Avaliacao=[Avaliação Média Ativos]
+			VAR MaiorArea=[Área com Maior Quadro]
+			VAR Comp=[Competência Destaque]
+			VAR Periodo=[Período Selecionado]
+			VAR Css="<style>.rhc{font-family:'Segoe UI',Arial,sans-serif;width:100%;height:100%;min-height:900px;box-sizing:border-box;padding:168px 74px;color:#fff;background:radial-gradient(circle at 18% 20%,rgba(52,105,232,.32),transparent 28%),radial-gradient(circle at 72% 78%,rgba(22,143,132,.2),transparent 30%),linear-gradient(135deg,#071426 0%,#0b1f3a 54%,#102a49 100%);position:relative;overflow:hidden}.rhc *{box-sizing:border-box}.rhc:before{content:'';position:absolute;inset:24px;border:1px solid rgba(255,255,255,.08);border-radius:26px;pointer-events:none}.rhc-grid{display:grid;grid-template-columns:1.55fr .75fr;gap:70px;align-items:center;height:100%;position:relative;z-index:1}.rhc-kicker{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#5ed1c3;font-weight:700}.rhc h1{font-size:66px;line-height:.98;margin:16px 0 22px;max-width:840px;letter-spacing:-.045em}.rhc-lead{font-size:20px;line-height:1.5;color:#c6d5e8;max-width:900px}.rhc-period{display:inline-flex;margin-top:26px;padding:10px 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;font-size:12px;color:#dce6f3}.rhc-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:48px;max-width:760px}.rhc-kpi{padding:17px;border-radius:14px;background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.1)}.rhc-kpi small{display:block;color:#9fb2ca;font-size:10px;text-transform:uppercase;letter-spacing:.08em}.rhc-kpi strong{display:block;font-size:24px;margin-top:8px}.rhc-side{padding:28px;border-radius:20px;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.11);backdrop-filter:blur(6px)}.rhc-side-label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#5ed1c3}.rhc-side h2{font-size:24px;line-height:1.3;margin:10px 0 24px}.rhc-nav{display:block;padding:18px 20px;margin-top:14px;border-radius:13px;background:#fff;color:#0b1f3a;font-size:14px;font-weight:700}.rhc-nav.alt{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.24)}.rhc-foot{position:absolute;left:74px;bottom:44px;color:#8297b2;font-size:10px;letter-spacing:.08em;text-transform:uppercase}@media(max-width:900px){.rhc{padding:40px}.rhc-grid{grid-template-columns:1fr}.rhc h1{font-size:45px}.rhc-kpis{grid-template-columns:1fr 1fr}.rhc-side{display:none}}@media(prefers-reduced-motion:reduce){.rhc *{animation:none!important;transition:none!important}}</style>"
+			VAR HtmlVazio="<div class='rhc' role='status'><div class='rhc-grid'><div><div class='rhc-kicker'>People analytics</div><h1>Sem dados para o recorte atual</h1><div class='rhc-lead'>Revise os filtros aplicados para acessar a síntese executiva.</div></div></div></div>"
+			VAR HtmlBody="<main class='rhc' role='region' aria-label='Capa do painel de recursos humanos'><div class='rhc-grid'><section><div class='rhc-kicker'>People analytics • visão executiva</div><h1>Pessoas que movem a estratégia.</h1><div class='rhc-lead'>Uma leitura integrada de quadro, movimentação, custo registrado e desenvolvimento — com profundidade narrativa e exploração nativa.</div><div class='rhc-period'>"&Periodo&"</div><div class='rhc-kpis'><div class='rhc-kpi'><small>Quadro atual</small><strong>"&FORMAT(Quadro,"#,0","pt-BR")&"</strong></div><div class='rhc-kpi'><small>Variação em 12 meses</small><strong>"&IF(ISBLANK(Var12),"—",FORMAT(Var12,"+0.0%;-0.0%;0.0%","pt-BR"))&"</strong></div><div class='rhc-kpi'><small>Custo mensal registrado</small><strong>R$ "&FORMAT(DIVIDE(Custo,1000000),"0.00","pt-BR")&" mi</strong></div><div class='rhc-kpi'><small>Avaliação média</small><strong>"&FORMAT(Avaliacao,"0.00","pt-BR")&"</strong></div></div></section><aside class='rhc-side'><div class='rhc-side-label'>Síntese do recorte</div><h2>"&MaiorArea&" tem o maior quadro e "&Comp&" lidera as médias de competência.</h2><div class='rhc-nav'>Abrir Análises HTML →</div><div class='rhc-nav alt'>Explorar no Power BI →</div></aside></div><div class='rhc-foot'>Projeto RH • dados sem identificação pessoal nas páginas analíticas</div></main>"
+			RETURN Css&IF(ISBLANK(Quadro),HtmlVazio,HtmlBody)
+		displayFolder: I. Apresentação HTML
+		lineageTag: af9cb20f-9366-4d30-80c1-7c66fe972ebc
+
+	/// Mediana do salário base entre vínculos vigentes na data final.
+	measure 'Mediana Salário Base Ativos' =
+			VAR DataRef=[Data Fim do Período]
+			VAR Ativos=FILTER(fVinculosRH,fVinculosRH[Data Contratação]<=DataRef && (ISBLANK(fVinculosRH[Data Demissão]) || fVinculosRH[Data Demissão]>=DataRef))
+			RETURN MEDIANX(Ativos,fVinculosRH[Salário Base])
+		formatString: R$ #,0.00
+		displayFolder: C. Financeiro
+		lineageTag: 5842a880-6dbf-4102-8d11-fa22f12e410e
+
+	measure qtd_estado = COUNTROWS(dEstado)
+		formatString: 0
+		lineageTag: 8c9dfe5f-6fa9-4e8d-8308-b6baacb1994c
+
+	column Ordem
+		lineageTag: f2704ec9-a84f-4fec-819e-8b28019c4b76
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ordem]
+
+	partition '_Medidas RH' = calculated
+		mode: import
+		source = DATATABLE("Ordem",INTEGER,{{1}})
+

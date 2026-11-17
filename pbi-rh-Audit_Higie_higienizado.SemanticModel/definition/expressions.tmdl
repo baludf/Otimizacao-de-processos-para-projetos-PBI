@@ -1,0 +1,9 @@
+/// Caminho local da fonte Excel do projeto de RH.
+expression pCaminhoBaseRH = "C:\Users\FZ7G\OneDrive - PETROBRAS\Documentos\pbi-rh-mcp-codex\BaseFuncionarios.xlsx" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 75ccf945-9057-4ad0-a581-73f2c42ef19d
+	queryGroup: '01 Staging'
+
+	annotation PBI_ResultType = Text
+
+	annotation PBI_NavigationStepName = Navegação
+

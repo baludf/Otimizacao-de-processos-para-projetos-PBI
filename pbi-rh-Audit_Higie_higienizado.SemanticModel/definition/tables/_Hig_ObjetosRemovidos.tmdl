@@ -1,0 +1,56 @@
+table _Hig_ObjetosRemovidos
+	lineageTag: 704be98f-8689-4978-92c0-ed1d3f131f1c
+
+	column Tipo
+		dataType: string
+		lineageTag: 4222b6c9-5089-4424-8916-e87559fdbea6
+		summarizeBy: none
+		sourceColumn: Tipo
+
+	column Tabela
+		dataType: string
+		lineageTag: be4eb462-65cf-4ecd-af7e-68feec5ed5d6
+		summarizeBy: none
+		sourceColumn: Tabela
+
+	column Nome
+		dataType: string
+		lineageTag: 3a461257-9809-4b63-85ac-46745a649aab
+		summarizeBy: none
+		sourceColumn: Nome
+
+	column MotivoRemocao
+		dataType: string
+		lineageTag: 3ef7a8b4-b296-454c-ad0f-a55cae25a46e
+		summarizeBy: none
+		sourceColumn: MotivoRemocao
+
+	column LocaisDeUsoVisual
+		dataType: string
+		lineageTag: d1a5a2cf-ca65-4e2e-adc4-940874ef5346
+		summarizeBy: none
+		sourceColumn: LocaisDeUsoVisual
+
+	column LocaisDeUsoModelo
+		dataType: string
+		lineageTag: dd4e4215-4045-46c5-bab7-c94730659e38
+		summarizeBy: none
+		sourceColumn: LocaisDeUsoModelo
+
+	column PaginasDeUso
+		dataType: string
+		lineageTag: b36d6e34-55b5-4473-af34-9829a2073446
+		summarizeBy: none
+		sourceColumn: PaginasDeUso
+
+	partition _Hig_ObjetosRemovidos = m
+		mode: import
+		source =
+				let
+				    Fonte = Csv.Document(File.Contents("C:\Users\GuilhermeCosta\GitHub\Estudos\Higienizacao PBI\Auditoria_Higienizacao\pbi-rh-Audit_Higie_higienizado.SemanticModel\removidos_pbi-rh-Audit_Higie.csv"),[Delimiter=";", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    Cabecalhos = Table.PromoteHeaders(Fonte, [PromoteAllScalars=true]),
+				    Tipos = Table.TransformColumnTypes(Cabecalhos,{{"Tipo", type text}, {"Tabela", type text}, {"Nome", type text}, {"MotivoRemocao", type text}, {"LocaisDeUsoVisual", type text}, {"LocaisDeUsoModelo", type text}, {"PaginasDeUso", type text}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table

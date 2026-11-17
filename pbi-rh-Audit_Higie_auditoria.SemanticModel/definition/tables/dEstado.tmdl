@@ -1,0 +1,51 @@
+table dEstado
+	lineageTag: 4163c0a9-8ce5-47b3-8aca-3ba9e88382ce
+
+	column ID_ESTADO
+		dataType: int64
+		formatString: 0
+		lineageTag: 9cd27926-4938-482e-861f-774356514906
+		summarizeBy: sum
+		sourceColumn: ID_ESTADO
+
+		annotation SummarizationSetBy = Automatic
+
+	column UF
+		dataType: string
+		lineageTag: c8d06c57-f568-4c4c-b79c-6668cae0377d
+		summarizeBy: none
+		sourceColumn: UF
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estado
+		dataType: string
+		lineageTag: 5017386a-86ec-4bff-b3e6-531f0152be82
+		summarizeBy: none
+		sourceColumn: Estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Região
+		dataType: string
+		lineageTag: 1e586357-8236-4374-9fd7-322479bf26a0
+		summarizeBy: none
+		sourceColumn: Região
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dEstado = m
+		mode: import
+		source =
+				let
+				    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("bZNNbsIwEIWvEmVNpSb9XwKFqKgBK2aHWAzEAktgIyfZ9Daoa3a9QS7WeQkpNGHzoswbj2c+24uFH/g9vz+ErJ3iz9S6XPnL3sIPEfyE7GhjKavNVGVn/wGWgOzpUB7/rX1EOK69L2uaxWf3if8GfQhtNbXrPnNgOIIock3di/3CgfcxRGe507n1xipVjnbVCpM7ezf7S37l4EhCskN5qrIlmdxyRBaXmm/8H80gVpfH7Fal4J6jMZqOyZHZlt+23VkAlvG8SuGNImezzN6sBbSx/J/opdxbcXOKAKjjCKKZpRfxuDprzRCAuUCD4oKt8UBcDGqPytOqAz0AdZGcM0y1Ht1UHpALnIhQztB+Vay7s4O0+IBoKspTxwfiZALRPKryJmSUdu2DCEE5mZ7TIu6EUxlMPUqrZgjeiewk1xSb7kPATnC4iTVp+WOaG9dUAdwkqXzGum+5oCrxPnBvyBtSTo4P4XoDwJV4CJIvhSeo2HXGAl0JglK5jT50RwHiOZqc2zVvpM3Vi1n+Ag==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [ID_ESTADO = _t, UF = _t, Estado = _t, Região = _t]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Fonte,{{"ID_ESTADO", Int64.Type}, {"UF", type text}, {"Estado", type text}, {"Região", type text}})
+				in
+				    #"Tipo Alterado"
+
+	changedProperty = Name
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,51 @@
+table _Hig_Medidas
+	lineageTag: 23e83e79-d8ea-44de-89b9-75a328b9c345
+
+	measure '% Removido' =
+			DIVIDE ( SUM ( _Hig_Resumo[Removidos] ), SUM ( _Hig_Resumo[ObjetosAntes] ) )
+		formatString: 0.00%
+		lineageTag: 18d170b9-337c-473c-b50b-97b7e36cd99e
+
+	measure '% Não Utilizada na Tabela' =
+			DIVIDE ( [Qtd Não Utilizada], [Total Objetos da Tabela] )
+		formatString: 0.00%
+		lineageTag: b471c46c-ea92-4f67-9637-13bfb7f11aba
+
+	measure '% Status na Tabela' =
+			DIVIDE ( COUNTROWS ( '_Hig_CatalogoStatus' ), [Total Objetos da Tabela] )
+		formatString: 0.00%
+		lineageTag: 2cbea995-becb-4967-894f-67be75c2dc52
+
+	measure 'Objetos Sem Classificação' =
+			CALCULATE (
+			    COUNTROWS ( '_Hig_CatalogoStatus' ),
+			    ISBLANK ( '_Hig_CatalogoStatus'[StatusFinal] )
+			)
+		formatString: 0
+		lineageTag: f71511a3-e6ec-45e2-a052-2fc5799ffdf7
+
+	measure 'Qtd Não Utilizada' =
+			CALCULATE (
+			    COUNTROWS ( '_Hig_CatalogoStatus' ),
+			    '_Hig_CatalogoStatus'[StatusFinal] = "Não utilizada"
+			)
+		formatString: 0
+		lineageTag: 1b242f56-267e-4532-a18b-7da62b09898c
+
+	measure 'Tabela 100% Não Utilizada' =
+			IF ( [% Não Utilizada na Tabela] = 1, "Sim", "Não" )
+		lineageTag: 40476c28-942a-45ac-984c-fa4b583a8583
+
+	measure 'Total Objetos da Tabela' =
+			CALCULATE (
+			    COUNTROWS ( '_Hig_CatalogoStatus' ),
+			    ALLEXCEPT ( '_Hig_CatalogoStatus', '_Hig_CatalogoStatus'[Tabela] )
+			)
+		formatString: 0
+		lineageTag: e4538489-fc26-43d4-ba82-d2fd6838a9ff
+
+	partition _Hig_Medidas = calculated
+		mode: import
+		source = DATATABLE("Dummy", INTEGER, {{1}})
+
+	annotation PBI_ResultType = Table

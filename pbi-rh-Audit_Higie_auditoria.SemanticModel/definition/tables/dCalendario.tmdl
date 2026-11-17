@@ -1,0 +1,126 @@
+/// Calendário civil desconectado usado como eixo analítico para métricas por evento e por intervalo de vigência.
+table dCalendario
+	lineageTag: 6d59e329-030f-4393-a9d2-269f2950cf16
+	dataCategory: Time
+
+	/// Data do calendário civil.
+	column Data
+		isUnique
+		formatString: dd/MM/yyyy
+		lineageTag: 94f4e069-bd02-4ccb-a28c-36fe65009e66
+		summarizeBy: none
+		sourceColumn: [Date]
+
+	column Ano
+		lineageTag: ad351d6e-b383-492e-a8eb-8150417a46bc
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ano]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Trimestre Número'
+		lineageTag: ac97c369-91f3-417c-9b78-1dfb6e5f0a3a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Trimestre Número]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Trimestre
+		lineageTag: 017d30da-d69d-42d1-86d9-4a605c0dd3c6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Trimestre]
+		sortByColumn: 'Trimestre Número'
+
+	column 'Mês Número'
+		lineageTag: e1700db6-f0d3-42e3-8336-e1d2ccdef7cc
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mês Número]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mês
+		lineageTag: e1112d7c-06d0-4ea0-b684-715d7dcde494
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mês]
+		sortByColumn: 'Mês Número'
+
+	column 'Ano Mês'
+		lineageTag: 4fc1fb80-bd7b-4c4a-aba1-38ad0c742693
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ano Mês]
+		sortByColumn: 'Ano Mês Ordem'
+
+	column 'Ano Mês Ordem'
+		lineageTag: 4705fd90-0b6c-4098-b1ee-371c80249eb8
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ano Mês Ordem]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dia
+		lineageTag: dc5dac06-31cc-4984-bb15-171d061649e4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Dia]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Dia da Semana Número'
+		lineageTag: b3b7ba5f-6082-4b0e-a412-533b1cc97cee
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Dia da Semana Número]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Dia da Semana'
+		lineageTag: e53a1278-f8a6-4914-8ea2-255731f4d202
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Dia da Semana]
+		sortByColumn: 'Dia da Semana Número'
+
+	column 'Início do Mês'
+		formatString: dd/MM/yyyy
+		lineageTag: 769208c4-50e7-401b-b65f-65af70913d12
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Início do Mês]
+
+	column 'Fim do Mês'
+		formatString: dd/MM/yyyy
+		lineageTag: 84719c37-cd53-4735-8afb-e2f80f6f836b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Fim do Mês]
+
+	partition dCalendario = calculated
+		mode: import
+		source =
+				VAR DataInicial = DATE(YEAR(MINX(ALL(fVinculosRH),fVinculosRH[Data Contratação])),1,1)
+				VAR MaiorDataFonte = MAXX(ALL(fVinculosRH),COALESCE(fVinculosRH[Data Demissão],fVinculosRH[Data Contratação]))
+				VAR DataFinal = DATE(YEAR(MAX(MaiorDataFonte,TODAY())),12,31)
+				RETURN
+				ADDCOLUMNS(
+				 CALENDAR(DataInicial,DataFinal),
+				 "Ano",YEAR([Date]),
+				 "Trimestre Número",QUARTER([Date]),
+				 "Trimestre","T"&FORMAT(QUARTER([Date]),"0"),
+				 "Mês Número",MONTH([Date]),
+				 "Mês",FORMAT([Date],"mmm","pt-BR"),
+				 "Ano Mês",FORMAT([Date],"yyyy-MM"),
+				 "Ano Mês Ordem",YEAR([Date])*100+MONTH([Date]),
+				 "Dia",DAY([Date]),
+				 "Dia da Semana Número",WEEKDAY([Date],2),
+				 "Dia da Semana",FORMAT([Date],"ddd","pt-BR"),
+				 "Início do Mês",DATE(YEAR([Date]),MONTH([Date]),1),
+				 "Fim do Mês",EOMONTH([Date],0)
+				)
+

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "e4d5c6b7a8f9e0d1c2b3",
+  "displayName": "Análises PWBI",
+  "displayOption": "FitToPage",
+  "height": 1080,
+  "width": 1920
+}

@@ -1,0 +1,46 @@
+table _Aud_Medidas
+	lineageTag: 1047f9da-9d73-4947-83ec-fbb05f6753e4
+
+	measure '% Não Utilizada na Tabela' =
+			DIVIDE ( [Qtd Não Utilizada], [Total Objetos da Tabela] )
+		formatString: 0.00%
+		lineageTag: c4cce67c-e495-4c58-97ae-b98505ea878b
+
+	measure '% Status na Tabela' =
+			DIVIDE ( COUNTROWS ( '_Aud_CatalogoStatus' ), [Total Objetos da Tabela] )
+		formatString: 0.00%
+		lineageTag: 9613e21a-1117-495c-97c9-3c4a0760322d
+
+	measure 'Objetos Sem Classificação' =
+			CALCULATE (
+			    COUNTROWS ( '_Aud_CatalogoStatus' ),
+			    ISBLANK ( '_Aud_CatalogoStatus'[StatusFinal] )
+			)
+		formatString: 0
+		lineageTag: 78125197-f50f-448a-8385-270554f3f543
+
+	measure 'Qtd Não Utilizada' =
+			CALCULATE (
+			    COUNTROWS ( '_Aud_CatalogoStatus' ),
+			    '_Aud_CatalogoStatus'[StatusFinal] = "Não utilizada"
+			)
+		formatString: 0
+		lineageTag: 9c991488-83f7-45f0-8e72-660b481ca92f
+
+	measure 'Tabela 100% Não Utilizada' =
+			IF ( [% Não Utilizada na Tabela] = 1, "Sim", "Não" )
+		lineageTag: 078e209b-ea67-4cc1-80f8-73cb84ba35e0
+
+	measure 'Total Objetos da Tabela' =
+			CALCULATE (
+			    COUNTROWS ( '_Aud_CatalogoStatus' ),
+			    ALLEXCEPT ( '_Aud_CatalogoStatus', '_Aud_CatalogoStatus'[Tabela] )
+			)
+		formatString: 0
+		lineageTag: b62d227c-391d-4ca9-accc-8f530a5a3c7c
+
+	partition _Aud_Medidas = calculated
+		mode: import
+		source = DATATABLE("Dummy", INTEGER, {{1}})
+
+	annotation PBI_ResultType = Table

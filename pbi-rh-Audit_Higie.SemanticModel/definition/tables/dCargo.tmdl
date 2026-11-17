@@ -1,0 +1,15 @@
+/// Dimensão de cargos.
+table dCargo
+	lineageTag: 8d341164-cdf1-48ff-a7c3-da90062387ed
+
+	column Cargo
+		isUnique
+		lineageTag: 08838024-1369-42e7-b73d-e28330290323
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Cargo]
+
+	partition dCargo = calculated
+		mode: import
+		source = FILTER(DISTINCT(SELECTCOLUMNS(fVinculosRH,"Cargo",fVinculosRH[Cargo])),NOT ISBLANK([Cargo]))
+

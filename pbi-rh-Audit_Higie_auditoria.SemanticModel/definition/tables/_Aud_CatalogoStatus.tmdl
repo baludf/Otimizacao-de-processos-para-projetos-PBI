@@ -1,0 +1,100 @@
+table '_Aud_CatalogoStatus'
+	lineageTag: 3747a3bf-0857-4111-83f8-1601ac76dfd5
+
+	column Tipo
+		lineageTag: 6ed32264-cef4-43b1-9a6a-9efc600b2ee3
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Tipo]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tabela
+		lineageTag: a51e71e5-2642-454b-86b9-3cf7d5fa87f1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Tabela]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nome
+		lineageTag: e2831966-067c-4f1a-b97c-a2e4498673f2
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Nome]
+
+		annotation SummarizationSetBy = Automatic
+
+	column StatusFinal
+		lineageTag: 88298dd0-abee-4958-ba28-df81b79c1a04
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [StatusFinal]
+
+		annotation SummarizationSetBy = Automatic
+
+	column LocaisDeUsoVisual
+		lineageTag: 3b66207f-fb89-41d4-b059-230c3bdf7b43
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [LocaisDeUsoVisual]
+
+		annotation SummarizationSetBy = Automatic
+
+	column LocaisDeUsoModelo
+		lineageTag: 5479620a-6c5e-42ff-afa7-680e69ffcebf
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [LocaisDeUsoModelo]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition '_Aud_CatalogoStatus' = calculated
+		mode: import
+		source = ```
+			
+			VAR Colunas =
+			    SELECTCOLUMNS(
+			        FILTER (
+			            INFO.VIEW.COLUMNS(),
+			            [IsHidden] = FALSE
+			        ),
+			        "Tipo", IF ( [Type] = "2", "Coluna Calculada", "Coluna" ),
+			        "Tabela", [Table],
+			        "Nome", [Name]
+			    )
+			
+			VAR Medidas =
+			    SELECTCOLUMNS(
+			        INFO.VIEW.MEASURES(),
+			        "Tipo", "Medida",
+			        "Tabela", [Table],
+			        "Nome", [Name]
+			    )
+			VAR CatalogoModelo = UNION ( Colunas, Medidas )
+			RETURN
+			    ADDCOLUMNS (
+			        CatalogoModelo,
+			        "StatusFinal",
+			        LOOKUPVALUE (
+			            '_Aud_Levantamento'[StatusFinal],
+			            '_Aud_Levantamento'[Tabela], [Tabela],
+			            '_Aud_Levantamento'[Nome], [Nome]
+			        ),
+			        "LocaisDeUsoVisual",
+			        LOOKUPVALUE (
+			            '_Aud_Levantamento'[LocaisDeUsoVisual],
+			            '_Aud_Levantamento'[Tabela], [Tabela],
+			            '_Aud_Levantamento'[Nome], [Nome]
+			        ),
+			        "LocaisDeUsoModelo",
+			        LOOKUPVALUE (
+			            '_Aud_Levantamento'[LocaisDeUsoModelo],
+			            '_Aud_Levantamento'[Tabela], [Tabela],
+			            '_Aud_Levantamento'[Nome], [Nome]
+			        )
+			    )
+			
+			```
+
+	annotation PBI_Id = 1cedf08e2e24438e8a102e7eb572907e

@@ -1,0 +1,41 @@
+/// Modelo analítico de RH com foco em quadro, movimentação, custos registrados, férias, horas extras e avaliações. PII permanece restrita à staging oculta.
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: pt-BR
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+/// Camada de ingestão e qualidade da base de funcionários.
+queryGroup 'Power Query'
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup '01 Staging'
+
+	annotation PBI_QueryGroupOrder = 1
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode","MCP-PBIModeling","TMDLView_Desktop"]
+
+annotation PBI_QueryOrder = ["stgFuncionarios","fVinculosRH","dEstado","pCaminhoBaseRH","dArea"]
+
+ref table stgFuncionarios
+ref table fVinculosRH
+ref table dNivel
+ref table dCargo
+ref table dCalendario
+ref table '_Medidas RH'
+ref table dEstado
+ref table DateTableTemplate_6815794a-a7df-41ed-928b-197a947cd374
+ref table LocalDateTable_cf14291d-6606-44c3-bc1c-c1b772a0bd8f
+ref table LocalDateTable_9fbf330c-a63d-4710-8f16-d4400b2bae5f
+ref table LocalDateTable_882d33ab-1416-450e-a1ea-527ed74fea6b
+ref table dArea
+
+ref cultureInfo pt-BR
+

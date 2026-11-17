@@ -1,0 +1,32 @@
+﻿Nome;Tabela;Tipo;Status;Motivo
+Mês;LocalDateTable_cf14291d-6606-44c3-bc1c-c1b772a0bd8f;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Data de Demissao;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Flag Competência Fora 0 a 10;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Trimestre;LocalDateTable_cf14291d-6606-44c3-bc1c-c1b772a0bd8f;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Ferias Acumuladas;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Data de Contratacao;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Beneficios;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Imagem;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Dia;LocalDateTable_9fbf330c-a63d-4710-8f16-d4400b2bae5f;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Dia;LocalDateTable_cf14291d-6606-44c3-bc1c-c1b772a0bd8f;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Trimestre;LocalDateTable_882d33ab-1416-450e-a1ea-527ed74fea6b;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Salario Base;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Mês;LocalDateTable_882d33ab-1416-450e-a1ea-527ed74fea6b;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Flag Horas Extras Negativas;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Mês;DateTableTemplate_6815794a-a7df-41ed-928b-197a947cd374;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Ano;LocalDateTable_882d33ab-1416-450e-a1ea-527ed74fea6b;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Ano;DateTableTemplate_6815794a-a7df-41ed-928b-197a947cd374;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Trimestre;LocalDateTable_9fbf330c-a63d-4710-8f16-d4400b2bae5f;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Data de Nascimento;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Flag Férias Negativas;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Trimestre;DateTableTemplate_6815794a-a7df-41ed-928b-197a947cd374;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Endereço;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Flag Avaliação Fora 0 a 10;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Dia;LocalDateTable_882d33ab-1416-450e-a1ea-527ed74fea6b;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Flag Data Demissão Antes Contratação;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Flag Valor Financeiro Negativo;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Nome Completo;stgFuncionarios;Coluna;Protegida (M query);Referenciada na partição M do stgFuncionarios
+Dia;DateTableTemplate_6815794a-a7df-41ed-928b-197a947cd374;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Ano;LocalDateTable_cf14291d-6606-44c3-bc1c-c1b772a0bd8f;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Mês;LocalDateTable_9fbf330c-a63d-4710-8f16-d4400b2bae5f;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks
+Ano;LocalDateTable_9fbf330c-a63d-4710-8f16-d4400b2bae5f;Coluna Calculada;Protegida (M query);Tabela de data referenciada por variation blocks

@@ -1,0 +1,43 @@
+table dArea
+	lineageTag: 4c3705ff-2870-484e-8293-bf1998c91c2a
+
+	column id_area
+		dataType: int64
+		formatString: 0
+		lineageTag: adc63b7b-8dd1-40c6-abdc-cb240f28a8c8
+		summarizeBy: none
+		sourceColumn: id_area
+
+		annotation SummarizationSetBy = Automatic
+
+	column Área
+		dataType: string
+		lineageTag: 04706334-4250-4237-a81f-b0e41b1ada60
+		summarizeBy: none
+		sourceColumn: Área
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dArea = m
+		mode: import
+		source =
+				let
+				 Fonte=stgFuncionarios,
+				 ComIdade=Table.AddColumn(Fonte,"Idade na Admissão",each if [Data de Nascimento]=null or [Data de Contratacao]=null then null else Number.RoundDown(Duration.Days(Date.From([Data de Contratacao])-Date.From([Data de Nascimento]))/365.2425),Int64.Type),
+				 ComFaixa=Table.AddColumn(ComIdade,"Faixa Etária na Admissão",each if [Idade na Admissão]=null then "Não informado" else if [Idade na Admissão]<18 then "Menor de 18" else if [Idade na Admissão]<25 then "18 a 24" else if [Idade na Admissão]<35 then "25 a 34" else if [Idade na Admissão]<45 then "35 a 44" else if [Idade na Admissão]<55 then "45 a 54" else "55 ou mais",type text),
+				 ComStatus=Table.AddColumn(ComFaixa,"Status do Vínculo",each if [Data de Demissao]=null then "Sem data de desligamento" else "Desligado",type text),
+				 SemPII=Table.RemoveColumns(ComStatus,{"Nome Completo","Data de Nascimento","Endereço","Imagem"}),
+				 Renomeadas=Table.RenameColumns(SemPII,{{"Data de Contratacao","Data Contratação"},{"Data de Demissao","Data Demissão"},{"Salario Base","Salário Base"},{"Beneficios","Benefícios"},{"Ferias Acumuladas","Férias Acumuladas"}}),
+				    #"Outras Colunas Removidas" = Table.SelectColumns(Renomeadas,{"Área"}),
+				    #"Duplicatas Removidas" = Table.Distinct(#"Outras Colunas Removidas"),
+				    #"Índice Adicionado" = Table.AddIndexColumn(#"Duplicatas Removidas", "Índice", 1, 1, Int64.Type),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Índice Adicionado",{{"Índice", "id_area"}}),
+				    #"Colunas Reordenadas" = Table.ReorderColumns(#"Colunas Renomeadas",{"id_area", "Área"})
+				in #"Colunas Reordenadas"
+
+	changedProperty = Name
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

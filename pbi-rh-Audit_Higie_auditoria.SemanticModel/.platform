@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "pbi-rh-Audit_Higie"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "8de4ce8a-1a9c-48a9-97c1-352a388a7eed"
+  }
+}

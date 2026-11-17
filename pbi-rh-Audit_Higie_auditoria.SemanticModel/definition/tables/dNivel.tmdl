@@ -1,0 +1,16 @@
+/// Dimensão de áreas organizacionais.
+table dNivel
+	lineageTag: cbf0ad6a-9307-478d-a8bc-eb78c930faf1
+
+	column Nível
+		lineageTag: e4b455c2-b06c-46f2-9fd9-d551e26da7b6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Nível]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dNivel = calculated
+		mode: import
+		source = FILTER(DISTINCT(SELECTCOLUMNS(fVinculosRH,"Nível",fVinculosRH[Nível])),NOT ISBLANK([Nível]))
+

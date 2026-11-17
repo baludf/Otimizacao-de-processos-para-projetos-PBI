@@ -1,0 +1,44 @@
+table _Hig_Protecoes
+	lineageTag: p1r2o3t4-e5c6-7890-abcd-ef1234567890
+
+	column Nome
+		dataType: string
+		lineageTag: n1o2m3e4-5678-9012-abcd-123456789012
+		summarizeBy: none
+		sourceColumn: Nome
+
+	column Tabela
+		dataType: string
+		lineageTag: t1a2b3e4-l567-8901-bcde-234567890123
+		summarizeBy: none
+		sourceColumn: Tabela
+
+	column Tipo
+		dataType: string
+		lineageTag: t1i2p3o4-5678-9012-cdef-345678901234
+		summarizeBy: none
+		sourceColumn: Tipo
+
+	column Status
+		dataType: string
+		lineageTag: s1t2a3t4-u567-8901-defa-456789012345
+		summarizeBy: none
+		sourceColumn: Status
+
+	column Motivo
+		dataType: string
+		lineageTag: m1o2t3i4-v567-8901-efab-567890123456
+		summarizeBy: none
+		sourceColumn: Motivo
+
+	partition _Hig_Protecoes = m
+		mode: import
+		source =
+				let
+				    Fonte = Csv.Document(File.Contents("C:\Users\GuilhermeCosta\GitHub\Estudos\Higienizacao PBI\Auditoria_Higienizacao\pbi-rh-Audit_Higie_higienizado.SemanticModel\protecoes_pbi-rh-Audit_Higie.csv"),[Delimiter=";", Columns=5, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    Cabecalhos = Table.PromoteHeaders(Fonte, [PromoteAllScalars=true]),
+				    Tipos = Table.TransformColumnTypes(Cabecalhos,{{"Nome", type text}, {"Tabela", type text}, {"Tipo", type text}, {"Status", type text}, {"Motivo", type text}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,100 @@
+table '_Hig_CatalogoStatus'
+	lineageTag: 0244d7d9-7b65-49c7-b25d-af3a1c86a2ec
+
+	column Tipo
+		lineageTag: b899602b-48f0-4b65-b65c-b134eacdb00b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Tipo]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tabela
+		lineageTag: 3ab9bb42-7333-48d8-9df2-77f1a6ba497b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Tabela]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nome
+		lineageTag: 976bcef5-3a07-4925-8e50-78597cd21b1c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Nome]
+
+		annotation SummarizationSetBy = Automatic
+
+	column StatusFinal
+		lineageTag: c837eb2f-5ad3-4ee2-a4b5-846dfed553f8
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [StatusFinal]
+
+		annotation SummarizationSetBy = Automatic
+
+	column LocaisDeUsoVisual
+		lineageTag: 2ee3c4b3-7b92-4b7a-9c73-4a4ddb74a880
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [LocaisDeUsoVisual]
+
+		annotation SummarizationSetBy = Automatic
+
+	column LocaisDeUsoModelo
+		lineageTag: 8d2ffca3-a794-4c07-90f3-c093bb33bf07
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [LocaisDeUsoModelo]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition '_Hig_CatalogoStatus' = calculated
+		mode: import
+		source = ```
+			
+			VAR Colunas =
+			    SELECTCOLUMNS(
+			        FILTER (
+			            INFO.VIEW.COLUMNS(),
+			            [IsHidden] = FALSE
+			        ),
+			        "Tipo", IF ( [Type] = "2", "Coluna Calculada", "Coluna" ),
+			        "Tabela", [Table],
+			        "Nome", [Name]
+			    )
+			
+			VAR Medidas =
+			    SELECTCOLUMNS(
+			        INFO.VIEW.MEASURES(),
+			        "Tipo", "Medida",
+			        "Tabela", [Table],
+			        "Nome", [Name]
+			    )
+			VAR CatalogoModelo = UNION ( Colunas, Medidas )
+			RETURN
+			    ADDCOLUMNS (
+			        CatalogoModelo,
+			        "StatusFinal",
+			        LOOKUPVALUE (
+			            '_Hig_Levantamento'[StatusFinal],
+			            '_Hig_Levantamento'[Tabela], [Tabela],
+			            '_Hig_Levantamento'[Nome], [Nome]
+			        ),
+			        "LocaisDeUsoVisual",
+			        LOOKUPVALUE (
+			            '_Hig_Levantamento'[LocaisDeUsoVisual],
+			            '_Hig_Levantamento'[Tabela], [Tabela],
+			            '_Hig_Levantamento'[Nome], [Nome]
+			        ),
+			        "LocaisDeUsoModelo",
+			        LOOKUPVALUE (
+			            '_Hig_Levantamento'[LocaisDeUsoModelo],
+			            '_Hig_Levantamento'[Tabela], [Tabela],
+			            '_Hig_Levantamento'[Nome], [Nome]
+			        )
+			    )
+			
+			```
+
+	annotation PBI_Id = 1cedf08e2e24438e8a102e7eb572907e
