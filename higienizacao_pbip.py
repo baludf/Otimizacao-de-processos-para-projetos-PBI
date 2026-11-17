@@ -1656,7 +1656,7 @@ def copiar_pagina_higienizacao(report_dir_orig: Path, report_dir_hig: Path, modo
             json.dump(page_data, f, indent=2, ensure_ascii=False)
 
         # Proteger página com aviso de direitos autorais e licença
-        proteger_pagina_pbip(page_hig_dir, project_name_hig)
+        proteger_pagina_pbip(page_hig_dir, project_name)
 
     # Atualizar pages.json para incluir a página
     pages_json_path = pages_hig / "pages.json"
@@ -1755,6 +1755,7 @@ def injetar_componentes_higienizacao(
     report_dir_hig: Path,
     csv_path: Path,
     project_name: str,
+    project_name_hig: str,
     objetos: List[Dict],
     status_final: Dict,
     referencias_visuais: Dict,
@@ -2213,6 +2214,7 @@ def processar_projeto(projeto: Dict, project_root: Path, dry_run: bool, modo_aud
         report_dir_hig,
         csv_hig_path,
         project_name,
+        project_name_hig,
         objetos,
         status_final,
         referencias_visuais,
