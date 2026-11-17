@@ -154,56 +154,105 @@ Gera automaticamente uma **página de auditoria** no relatório (`TEMPLATE_PAGIN
 git clone <repo>  # ou apenas copie os .py
 ```
 
-### 1. Auditoria (Levantamento)
+### Script Principal: `otimizacao_pbip.py`
+
+O script unificado executa **auditoria** e/ou **higienização** em um único comando.
+
+#### Modos de Operação
+
+| Flag | Comportamento | Saída |
+|------|---------------|-------|
+| (nenhuma) | **Padrão**: executa AMBOS sequencialmente | `_auditoria` + `_higienizado` |
+| `--auditoria` | Apenas analisa (não remove objetos) | `_auditoria` |
+| `--higienizar` | Remove objetos não utilizados | `_higienizado` |
+
+#### Exemplos de Uso
 
 ```bash
-# Gera apenas o levantamento (não altera nada)
-python levantamentoObjetos.py
+# Executa AMBOS os modos (auditoria + higienização) — RECOMENDADO
+python otimizacao_pbip.py
 
-# Ou especificando raiz
-python levantamentoObjetos.py --root "C:\Projetos\MeuPBIP"
+# Apenas auditoria (análise sem remoção)
+python otimizacao_pbip.py --auditoria
+
+# Apenas higienização (remoção completa)
+python otimizacao_pbip.py --higienizar
+
+# Simulação (dry-run) — mostra o que seria feito sem escrever
+python otimizacao_pbip.py --dry-run
+python otimizacao_pbip.py --auditoria --dry-run
+python otimizacao_pbip.py --higienizar --dry-run
+
+# Especificar pasta raiz do projeto
+python otimizacao_pbip.py --root "C:\Projetos\MeuPBIP"
+
+# Processar apenas um projeto específico
+python otimizacao_pbip.py --projeto "MeuProjeto"
+
+# Forçar reload no Power BI (remove cache .abf)
+python otimizacao_pbip.py --no-cache
 ```
 
-**Saída:** `levantamento_uso_objetos.csv` — abra no Excel/Power BI
+#### Saídas Geradas
+
+**Modo Auditoria (`_auditoria`):**
+```
+<projeto>_auditoria.SemanticModel/       # Modelo analisado
+<projeto>_auditoria.Report/              # Relatório com página "Auditoria"
+<projeto>_auditoria.pbip                 # Arquivo .pbip atualizado
+levantamento_uso_objetos_<projeto>.csv   # Levantamento completo
+RELATORIO_HIGIENIZACAO.md                # Relatório de auditoria
+```
+
+**Modo Higienização (`_higienizado`):**
+```
+<projeto>_higienizado.SemanticModel/     # Modelo limpo
+<projeto>_higienizado.Report/            # Relatório com página "Higienização"
+<projeto>_higienizado.pbip               # Arquivo .pbip atualizado
+levantamento_uso_objetos_<projeto>.csv   # Levantamento completo
+removidos_<projeto>.csv                  # Objetos removidos
+resumo_<projeto>.csv                     # Resumo antes/depois
+protecoes_<projeto>.csv                  # Itens protegidos
+RELATORIO_HIGIENIZACAO.md                # Relatório de higienização
+```
 
 ---
 
-### 2. Higienização Completa
+### Script Legado: `levantamentoObjetos.py`
+
+Para apenas gerar o CSV de levantamento sem criar páginas no relatório:
 
 ```bash
-# Executa tudo (auditoria + limpeza + cópia _higienizado)
-python higienizacao_pbip.py
-
-# Apenas simula (dry-run)
-python higienizacao_pbip.py --dry-run
-
-# Especificando raiz
-python higienizacao_pbip.py --root "C:\Projetos\MeuPBIP"
+python levantamentoObjetos.py
+python levantamentoObjetos.py --root "C:\Projetos\MeuPBIP"
 ```
 
-**Saídas geradas:**
-```
-<projeto>_higienizado.SemanticModel/   # Modelo limpo
-<projeto>_higienizado.Report/          # Relatório limpo
-<projeto>_higienizado.pbip             # Arquivo .pbip atualizado
-levantamento_uso_objetos.csv           # Auditoria completa
-removidos_<projeto>.csv                # Objetos removidos
-resumo_<projeto>.csv                   # Resumo antes/depois
-protecoes_<projeto>.csv                # Itens protegidos
-RELATORIO_HIGIENIZACAO.md              # Relatório detalhado
-```
+**Saída:** `levantamento_uso_objetos.csv`
 
 ---
 
 ## 📊 Fluxo de Trabalho Recomendado
 
+### Fluxo Unificado (Recomendado)
+```mermaid
+graph TD
+    A[Projeto PBIP Original] --> B[otimizacao_pbip.py]
+    B --> C1[Projeto _auditoria<br/>+ Levantamento CSV]
+    B --> C2[Projeto _higienizado<br/>+ Levantamento CSV]
+    C1 --> D1[Abrir _auditoria.pbip<br/>Validar página Auditoria]
+    C2 --> D2[Abrir _higienizado.pbip<br/>Validar página Higienização]
+    D1 --> E[Revisar RELATORIO_HIGIENIZACAO.md]
+    D2 --> E
+```
+
+### Fluxo Separado (Legado)
 ```mermaid
 graph TD
     A[Projeto PBIP Original] --> B[levantamentoObjetos.py]
     B --> C[levantamento_uso_objetos.csv]
     C --> D{Revisar CSV}
     D -->|Ajustar se necessário| B
-    D -->|OK| E[higienizacao_pbip.py]
+    D -->|OK| E[higienizacao_pbip.py / otimizacao_pbip.py --higienizar]
     E --> F[Projeto _higienizado PBIP]
     F --> G[Abrir no Power BI Desktop]
     G --> H[Validar Visuais + Modelo]
@@ -246,16 +295,22 @@ MeuProjeto/
 
 ## ⚙️ Opções de Linha de Comando
 
-### `levantamentoObjetos.py`
+### `otimizacao_pbip.py` (script principal)
 | Argumento | Descrição |
 |-----------|-----------|
-| `--root` | Pasta raiz do projeto (default: pasta do script) |
+| `--root` | Pasta raiz contendo os projetos PBIP (default: pasta atual) |
+| `--dry-run` | Apenas simula, mostra o que seria feito sem escrever arquivos |
+| `--projeto` | Processar apenas um projeto específico (nome sem extensão) |
+| `--auditoria` | Modo auditoria: apenas analisa, não remove objetos. Gera página "Auditoria" (altura 1850) |
+| `--higienizar` | Modo higienização: remove objetos não utilizados. Gera página "Higienização" (altura 3000) |
+| `--no-cache` | Deleta o cache .abf após a geração para forçar reload no Power BI |
 
-### `higienizacao_pbip.py`
+> **Nota:** Se `--auditoria` e `--higienizar` **não** forem especificados, **ambos** os modos são executados sequencialmente.
+
+### `levantamentoObjetos.py` (script legado - apenas CSV)
 | Argumento | Descrição |
 |-----------|-----------|
 | `--root` | Pasta raiz do projeto (default: pasta do script) |
-| `--dry-run` | Simula sem gravar arquivos |
 
 ---
 
