@@ -1503,6 +1503,7 @@ def proteger_pagina_pbip(caminho_pasta_pagina: Path, nome_projeto: str, autor: s
     )
     
     # Construir visual.json do textbox seguindo schema Microsoft
+    # NOTA: textbox NÃO deve ter propriedade "query" (causa erro "queryState necessário")
     visual_json = {
         "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
         "name": visual_uuid,
@@ -1516,7 +1517,6 @@ def proteger_pagina_pbip(caminho_pasta_pagina: Path, nome_projeto: str, autor: s
         },
         "visual": {
             "visualType": "textbox",
-            "query": {},
             "objects": {
                 "general": [
                     {
@@ -1540,7 +1540,8 @@ def proteger_pagina_pbip(caminho_pasta_pagina: Path, nome_projeto: str, autor: s
                         }
                     }
                 ]
-            }
+            },
+            "drillFilterOtherVisuals": True
         }
     }
     
