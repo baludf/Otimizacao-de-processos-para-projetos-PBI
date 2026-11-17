@@ -457,4 +457,4 @@ Este toolkit insere automaticamente nas páginas de auditoria/higienização ger
 ---
 
 > **Desenvolvido para times de BI que precisam de qualidade, rastreabilidade e modelos limpos.**  
-> *Power BI PBIP Auditoria & Higienização Toolkit*
+> *Power BI PBIP Otimização Toolkit*
