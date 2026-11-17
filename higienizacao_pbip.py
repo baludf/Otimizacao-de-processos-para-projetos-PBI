@@ -27,6 +27,7 @@ import os
 import re
 import json
 import shutil
+import uuid
 from datetime import datetime
 from collections import defaultdict
 from pathlib import Path
@@ -1423,7 +1424,127 @@ def extrair_template_pagina(dest_dir: Path):
         out_path.write_bytes(base64.b64decode(b64_content))
     return dest_dir
 
-def copiar_pagina_higienizacao(report_dir_orig: Path, report_dir_hig: Path, modo_auditoria: bool = False):
+def proteger_pagina_pbip(caminho_pasta_pagina: Path, nome_projeto: str, autor: str = "Guilherme Gomes Costa"):
+    """
+    Adiciona proteção de direitos autorais à página PBIP recém-criada.
+    
+    Faz duas coisas:
+    1. Adiciona annotation 'GeneratedByTool' na lista annotations do page.json
+    2. Cria um visual textbox na borda inferior da página com aviso de licença
+    
+    Args:
+        caminho_pasta_pagina: Caminho para a pasta da página (contém page.json e pasta visuals/)
+        nome_projeto: Nome do projeto para referência
+        autor: Nome do autor para o aviso
+    """
+    import uuid
+    
+    page_json_path = caminho_pasta_pagina / "page.json"
+    if not page_json_path.exists():
+        print(f"    [AVISO] page.json não encontrado em {caminho_pasta_pagina}")
+        return False
+    
+    # 1. Ler page.json e obter dimensões
+    with open(page_json_path, "r", encoding="utf-8") as f:
+        page_data = json.load(f)
+    
+    width = page_data.get("width", 1920)
+    height = page_data.get("height", 3000)
+    
+    # 2. Adicionar annotation GeneratedByTool
+    if "annotations" not in page_data:
+        page_data["annotations"] = []
+    
+    annotation_value = (
+        f"Otimização de processos para projetos PBI ({autor}) - "
+        f"PolyForm Noncommercial 1.0.0"
+    )
+    
+    # Verificar se já existe essa annotation
+    annotation_exists = any(
+        ann.get("name") == "GeneratedByTool" for ann in page_data["annotations"]
+    )
+    
+    if not annotation_exists:
+        page_data["annotations"].append({
+            "name": "GeneratedByTool",
+            "value": annotation_value
+        })
+        print(f"    Annotation 'GeneratedByTool' adicionada ao page.json")
+    
+    # Salvar page.json atualizado
+    with open(page_json_path, "w", encoding="utf-8") as f:
+        json.dump(page_data, f, indent=2, ensure_ascii=False)
+    
+    # 3. Criar visual textbox na borda inferior
+    visuals_dir = caminho_pasta_pagina / "visuals"
+    visuals_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Gerar UUID de 20 caracteres (formato usado nos visuals do template)
+    visual_uuid = uuid.uuid4().hex[:20]
+    visual_dir = visuals_dir / visual_uuid
+    visual_dir.mkdir(parents=True, exist_ok=True)
+    visual_json_path = visual_dir / "visual.json"
+    
+    # Texto do aviso de licença
+    texto_aviso = (
+        f"Auditoria gerada via Otimização de processos para projetos PBI ({autor}) | "
+        f"Licença PolyForm Noncommercial 1.0.0 - Uso comercial proibido."
+    )
+    
+    # Construir visual.json do textbox seguindo schema Microsoft
+    visual_json = {
+        "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+        "name": visual_uuid,
+        "position": {
+            "x": 16,
+            "y": height - 30,
+            "z": 9999,
+            "height": 24,
+            "width": width - 32,
+            "tabOrder": 9999
+        },
+        "visual": {
+            "visualType": "textbox",
+            "query": {},
+            "objects": {
+                "general": [
+                    {
+                        "properties": {
+                            "paragraphs": [
+                                {
+                                    "textRuns": [
+                                        {
+                                            "value": texto_aviso,
+                                            "textStyle": {
+                                                "fontWeight": "normal",
+                                                "fontSize": "8pt",
+                                                "fontFamily": "Segoe UI",
+                                                "color": "#666666"
+                                            }
+                                        }
+                                    ],
+                                    "horizontalTextAlignment": "right"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+    
+    with open(visual_json_path, "w", encoding="utf-8") as f:
+        json.dump(visual_json, f, indent=2, ensure_ascii=False)
+    
+    print(f"    Visual de proteção criado: visuals/{visual_uuid}/visual.json")
+    print(f"    Texto: {texto_aviso}")
+    print(f"    Posição: x=16, y={height-30}, width={width-32}, height=24, z=9999")
+    
+    return True
+
+
+def copiar_pagina_higienizacao(report_dir_orig: Path, report_dir_hig: Path, modo_auditoria: bool = False, project_name: str = ""):
     """
     Cria a página 'Higienização' no relatório higienizado usando o template embutido.
     No modo auditoria, usa template com 16 visuais e altura 1850.
@@ -1533,6 +1654,9 @@ def copiar_pagina_higienizacao(report_dir_orig: Path, report_dir_hig: Path, modo
         # Salvar page.json
         with open(page_json_path, "w", encoding="utf-8") as f:
             json.dump(page_data, f, indent=2, ensure_ascii=False)
+
+        # Proteger página com aviso de direitos autorais e licença
+        proteger_pagina_pbip(page_hig_dir, project_name_hig)
 
     # Atualizar pages.json para incluir a página
     pages_json_path = pages_hig / "pages.json"
@@ -1788,7 +1912,7 @@ relationship {rel_id}
 
     # 7. Copiar/criar página Higienização no relatório
     print("  Configurando página de Higienização no relatório...")
-    copiar_pagina_higienizacao(report_dir_orig, report_dir_hig, modo_auditoria)
+    copiar_pagina_higienizacao(report_dir_orig, report_dir_hig, modo_auditoria, project_name_hig)
 
     # Remover cache se solicitado (força reload no Power BI)
     if no_cache:

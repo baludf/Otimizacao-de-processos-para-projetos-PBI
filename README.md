@@ -352,19 +352,45 @@ Modifique `gerar_nome_tabela()` para alterar convenção de nomenclatura.
 
 ## 📄 Licença
 
-PolyForm Noncommercial License 1.0.0
+**⚠️ IMPORTANTE: ESTE SOFTWARE É LICENCIADO SOB A POLYFORM NONCOMMERCIAL LICENSE 1.0.0**
 
-Copyright (c) 2026 Guilherme Gomes Costa
+### Proibição Expressa de Uso Comercial/Corporativo
 
-This software is licensed under the PolyForm Noncommercial License 1.0.0.
-You may not use this software for any commercial purpose, including internal business operations, commercial consulting, or paid client projects.
+> **VOCÊ NÃO PODE USAR ESTE SOFTWARE PARA FINS COMERCIAIS.**
+> 
+> Isso inclui, mas não se limita a:
+> - Operações internas de empresas (business operations)
+> - Consultoria comercial ou serviços profissionais pagos
+> - Projetos de clientes remunerados
+> - Qualquer atividade que gere receita direta ou indiretamente
+> - Uso em produtos/serviços vendidos ou licenciados a terceiros
+> - Incorporação em soluções corporativas proprietárias
 
-Full license text is available at:
-https://polyformproject.org
+A licença **PolyForm Noncommercial 1.0.0** permite apenas uso **não comercial** (pesquisa, estudo, projetos pessoais, avaliação).
 
-For commercial licensing inquiries, contact: [SEU E-MAIL]
+### Detalhes da Licença
+
+| Item | Detalhes |
+|------|----------|
+| **Licença** | PolyForm Noncommercial License 1.0.0 |
+| **Copyright** | (c) 2026 Guilherme Gomes Costa |
+| **Texto completo** | https://polyformproject.org/licenses/noncommercial/1.0.0 |
+| **Arquivo local** | [`LICENSE`](LICENSE) |
+| **Contato comercial** | [SEU E-MAIL] |
+
+### Como Solicitar Licença Comercial
+
+Para qualquer uso comercial (interno, consultoria, projetos de clientes, distribuição, SaaS, etc.), **é obrigatório obter autorização prévia por escrito**. Entre em contato em: **[SEU E-MAIL]**
+
+### Aviso Gerado Automaticamente
+
+Este toolkit insere automaticamente nas páginas de auditoria/higienização geradas:
+- **Annotation no `page.json`**: `GeneratedByTool = "Otimização de processos para projetos PBI (Guilherme Gomes Costa) - PolyForm Noncommercial 1.0.0"`
+- **Visual textbox no rodapé**: `"Auditoria gerada via Otimização de processos para projetos PBI (Guilherme Gomes Costa) | Licença PolyForm Noncommercial 1.0.0 - Uso comercial proibido."`
 
 ---
+
+**AVISO LEGAL:** O uso não autorizado para fins comerciais constitui violação de direitos autorais e dos termos da licença PolyForm, sujeitando o infrator às penalidades legais cabíveis.
 
 ## 🤝 Contribuição
 
