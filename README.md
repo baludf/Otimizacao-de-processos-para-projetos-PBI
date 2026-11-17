@@ -352,7 +352,17 @@ Modifique `gerar_nome_tabela()` para alterar convenção de nomenclatura.
 
 ## 📄 Licença
 
-MIT License — Uso livre para fins comerciais e não-comerciais.
+PolyForm Noncommercial License 1.0.0
+
+Copyright (c) 2026 Guilherme Gomes Costa
+
+This software is licensed under the PolyForm Noncommercial License 1.0.0.
+You may not use this software for any commercial purpose, including internal business operations, commercial consulting, or paid client projects.
+
+Full license text is available at:
+https://polyformproject.org
+
+For commercial licensing inquiries, contact: [SEU E-MAIL]
 
 ---
 
