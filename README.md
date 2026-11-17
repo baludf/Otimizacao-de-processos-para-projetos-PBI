@@ -301,8 +301,8 @@ MeuProjeto/
 | `--root` | Pasta raiz contendo os projetos PBIP (default: pasta atual) |
 | `--dry-run` | Apenas simula, mostra o que seria feito sem escrever arquivos |
 | `--projeto` | Processar apenas um projeto específico (nome sem extensão) |
-| `--auditoria` | Modo auditoria: apenas analisa, não remove objetos. Gera página "Auditoria" (altura 1850) |
-| `--higienizar` | Modo higienização: remove objetos não utilizados. Gera página "Higienização" (altura 3000) |
+| `--auditoria` | Modo auditoria: apenas analisa, não remove objetos. Gera página "Auditoria" (altura 1870) |
+| `--higienizar` | Modo higienização: remove objetos não utilizados. Gera página "Higienização" (altura 3020) |
 | `--no-cache` | Deleta o cache .abf após a geração para forçar reload no Power BI |
 
 > **Nota:** Se `--auditoria` e `--higienizar` **não** forem especificados, **ambos** os modos são executados sequencialmente.
@@ -441,7 +441,7 @@ Para qualquer uso comercial (interno, consultoria, projetos de clientes, distrib
 
 Este toolkit insere automaticamente nas páginas de auditoria/higienização geradas:
 - **Annotation no `page.json`**: `GeneratedByTool = "Otimização de processos para projetos PBI (Guilherme Gomes Costa) - PolyForm Noncommercial 1.0.0"`
-- **Visual textbox no rodapé**: `"Auditoria gerada via Otimização de processos para projetos PBI (Guilherme Gomes Costa) | Licença PolyForm Noncommercial 1.0.0 - Uso comercial proibido."`
+- **Visual textbox no rodapé**: `"Otimização gerada via Otimização de processos para projetos PBI (Guilherme Gomes Costa) | Licença PolyForm Noncommercial 1.0.0 - Uso comercial proibido."`
 
 ---
 
