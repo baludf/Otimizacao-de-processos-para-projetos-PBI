@@ -1,0 +1,14 @@
+# Lock files
+.~lock*
+
+# Zip files
+*.zip
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary files
+*.tmp
+*.temp
