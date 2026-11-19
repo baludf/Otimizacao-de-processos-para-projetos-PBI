@@ -71,6 +71,18 @@ def is_data_table(table_name: str) -> bool:
     return any(table_name.startswith(p) for p in TABELAS_DATA_PREFIXOS)
 
 
+# Tabelas cujo nome contenha algum destes termos (sem diferenciar maiusculas)
+# sao ignoradas na auditoria, na higienizacao e em TODOS os arquivos gerados
+# (CSVs, relatorio .md e tabelas _Hig_*/_Aud_* do modelo).
+TERMOS_TABELAS_IGNORADAS = ["DateTable"]
+
+
+def is_tabela_ignorada(table_name: str) -> bool:
+    """True se o nome da tabela contem algum termo da lista de ignoradas."""
+    nome = table_name.lower()
+    return any(t.lower() in nome for t in TERMOS_TABELAS_IGNORADAS)
+
+
 # ==================== FUNÇÕES UTILITÁRIAS ====================
 
 def read_text_file(path: str) -> str:
@@ -219,6 +231,8 @@ def extrair_objetos(tables_dir: Path):
 
     for tmdl_path in sorted(tables_dir.glob("*.tmdl")):
         table_name = tmdl_path.stem
+        if is_tabela_ignorada(table_name):
+            continue
         tmdl_text = read_text_file(str(tmdl_path))
 
         tabelas_info[table_name] = {
@@ -639,6 +653,10 @@ def gerar_csv_levantamento(csv_path: Path, objetos: List[Dict], status_final: Di
 
     linhas = []
     for o in objetos:
+        # Não exportar tabelas DateTable (ex.: LocalDateTable_*, DateTableTemplate_*)
+        if "datetable" in o["table"].lower():
+            continue
+
         chave = (o["table"], o["name"])
         usado_visual = chave in referencias_visuais
         usado_modelo = len(used_by.get(chave, [])) > 0
@@ -907,6 +925,7 @@ def criar_tmdl_catalogo() -> str:
 			        FILTER (
 			            INFO.VIEW.COLUMNS(),
 			            [IsHidden] = FALSE
+			                && NOT CONTAINSSTRING ( [Table], "DateTable" )
 			        ),
 			        "Tipo", IF ( [Type] = "2", "Coluna Calculada", "Coluna" ),
 			        "Tabela", [Table],
@@ -915,7 +934,10 @@ def criar_tmdl_catalogo() -> str:
 			
 			VAR Medidas =
 			    SELECTCOLUMNS(
-			        INFO.VIEW.MEASURES(),
+			        FILTER (
+			            INFO.VIEW.MEASURES(),
+			            NOT CONTAINSSTRING ( [Table], "DateTable" )
+			        ),
 			        "Tipo", "Medida",
 			        "Tabela", [Table],
 			        "Nome", [Name]
