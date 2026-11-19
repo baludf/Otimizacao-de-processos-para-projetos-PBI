@@ -12,7 +12,7 @@ Este toolkit é composto por **dois scripts principais** que trabalham em conjun
 | Script | Função |
 |--------|--------|
 | `levantamentoObjetos.py` | **Auditoria** — Mapeia todos os objetos (colunas, medidas, colunas calculadas) e classifica seu uso |
-| `higienizacao_pbip.py` | **Higienização** — Remove objetos não utilizados e gera projeto PBIP limpo |
+| `otimizacao_pbip.py` | **Higienização** — Remove objetos não utilizados e gera projeto PBIP limpo |
 
 ---
 
@@ -60,7 +60,7 @@ Analisa **modelo semântico** (dependências DAX) e **relatório** (visuais, fil
 
 ---
 
-## 🧹 `higienizacao_pbip.py` — Higienização Automatizada
+## 🧹 `otimizacao_pbip.py` — Higienização Automatizada
 
 ### O que faz
 
@@ -252,7 +252,7 @@ graph TD
     B --> C[levantamento_uso_objetos.csv]
     C --> D{Revisar CSV}
     D -->|Ajustar se necessário| B
-    D -->|OK| E[higienizacao_pbip.py / otimizacao_pbip.py --higienizar]
+    D -->|OK| E[otimizacao_pbip.py / otimizacao_pbip.py --higienizar]
     E --> F[Projeto _higienizado PBIP]
     F --> G[Abrir no Power BI Desktop]
     G --> H[Validar Visuais + Modelo]
@@ -393,7 +393,7 @@ Coluna;fVinculosRH;Flag Data Demissão Antes Contratação;Não;Não;Não utiliz
 ## 🔧 Extensibilidade
 
 ### Adicionar Novas Proteções
-Edite `aplicar_protecoes()` em `higienizacao_pbip.py`:
+Edite `aplicar_protecoes()` em `otimizacao_pbip.py`:
 ```python
 if tabela == "MinhaTabela" and nome in MINHAS_COLUNAS_CRITICAS:
     protegido = True
